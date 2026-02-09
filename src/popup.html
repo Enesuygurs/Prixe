@@ -32,6 +32,44 @@
       </div>
     </div>
 
+    <section id="settingsPanel" class="settings-panel hidden">
+      <div class="settings-content steam-layout">
+        <label id="labelFilterSettings" class="steam-section-title">Filtre ayarlari</label>
+
+        <div class="steam-grid">
+          <div>
+            <label id="labelLowPrice" for="lowPrice">Dusuk fiyat limiti ($)</label>
+            <input id="lowPrice" type="number" min="0" step="1">
+          </div>
+          <div>
+            <label id="labelMidPrice" for="midPrice">Orta fiyat limiti ($)</label>
+            <input id="midPrice" type="number" min="1" step="1">
+          </div>
+        </div>
+
+        <div class="steam-checkbox-row">
+          <label id="labelEnablePriceHighlight"><input id="enablePriceHighlight" type="checkbox"> Fiyat isaretleme aktif</label>
+          <label id="labelHideMixedOrWorse"><input id="hideMixedOrWorse" type="checkbox"> Mixed ve alti gizle</label>
+        </div>
+
+        <div class="steam-actions">
+          <button id="saveSettingsBtn" class="btn-save">Ayar Kaydet</button>
+          <button id="resetBtn" class="steam-pill">Sifirla</button>
+        </div>
+
+        <div class="steam-section-divider"></div>
+
+        <label id="labelLanguageSection" class="steam-section-title">Language</label>
+
+        <div>
+          <select id="languageSelect">
+            <option value="tr">Türkçe</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
    
   </div>
 
