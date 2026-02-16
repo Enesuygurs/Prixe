@@ -50,3 +50,39 @@ body.popup-mode {
   color: #e4e4e7;
 }
 
+.header-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: #71717a;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.icon-btn:hover {
+  color: #e4e4e7;
+  background: #27272f;
+}
+
+.icon-btn.tab-btn.active {
+  color: #bfe9ff;
+  background: rgba(102, 192, 244, 0.18);
+}
+
+/* ===== Panels ===== */
+.settings-panel {
+  background: #1a1a24;
+  border-bottom: 1px solid #2a2a35;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.settings-content {
+  padding: 14px 16px;
+}
