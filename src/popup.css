@@ -86,3 +86,101 @@ body.popup-mode {
 .settings-content {
   padding: 14px 16px;
 }
+
+.settings-content label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #a1a1aa;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ===== Main Area ===== */
+.main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: #1a1a24;
+}
+
+/* ===== Steam UI ===== */
+.steam-layout {
+  display: block;
+}
+
+.steam-layout > div:not(.steam-section-divider) {
+  margin-bottom: 12px;
+}
+
+.steam-layout > div:last-child {
+  margin-bottom: 0;
+}
+
+.steam-layout label {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #b7c4d1;
+}
+
+.steam-hint {
+  font-size: 12px;
+  color: #71717a;
+  line-height: 1.4;
+}
+
+.steam-section-title {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 14px;
+  margin-bottom: 6px;
+}
+
+.settings-content > .steam-section-title:first-child {
+  margin-top: 0;
+}
+
+.steam-section-divider {
+  height: 1px;
+  background: #2a2a35;
+  margin: 16px 0;
+}
+
+.steam-layout input[type="number"],
+.steam-layout select,
+.settings-content select {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #2a2a35;
+  background: #0f0f13;
+  color: #e4e4e7;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.steam-layout select,
+.settings-content select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 36px;
+}
+
+.steam-layout input[type="number"]:focus,
+.steam-layout select:focus,
+.settings-content select:focus {
+  border-color: #66c0f4;
+}
