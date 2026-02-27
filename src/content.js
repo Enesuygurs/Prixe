@@ -137,6 +137,112 @@
       return 0;
     }
 
+    const tooltipText = tooltip
+      .replace(/<br\s*\/?>/gi, " ")
+      .replace(/<[^>]*>/g, " ")
+      .replace(/&nbsp;/g, " ");
+
+    const patterns = [
+      /([\d.,]+)\s*adet/i,
+      /([\d.,]+)\s*adet\s*kullanici\s*incelemesinden/i,
+      /of the\s*([\d.,]+)\s*user reviews?/i,
+      /([\d.,]+)\s*user reviews?/i
+    ];
+
+    for (const pattern of patterns) {
+      const match = tooltipText.match(pattern);
+      if (match?.[1]) {
+        const value = Number(match[1].replace(/[^\d]/g, ""));
+        if (Number.isFinite(value)) {
+          return value;
+        }
+      }
+    }
+
+    return 0;
+  }
+
+  function parsePositivePercent(row) {
+    const reviewEl = row.querySelector(".search_review_summary");
+    if (!reviewEl) {
+      return 0;
+    }
+
+    const tooltip = reviewEl.getAttribute("data-tooltip-html") || "";
+    const text = tooltip
+      .replace(/<br\s*\/?>/gi, " ")
+      .replace(/<[^>]*>/g, " ")
+      .replace(/&nbsp;/g, " ");
+
+    const match = text.match(/%(\d{1,3})|(\d{1,3})\s*%/);
+    const value = Number(match?.[1] || match?.[2] || 0);
+    return Number.isFinite(value) ? value : 0;
+  }
+
+  function parseReleaseYear(row) {
+    const releaseEl = row.querySelector(".search_released");
+    if (!releaseEl) {
+      return 0;
+    }
+
+    const text = releaseEl.textContent || "";
+    const match = text.match(/(19|20)\d{2}/);
+    return match ? Number(match[0]) : 0;
+  }
+
+  function getReviewCategory(row) {
+    const score = row.querySelector(".search_review_summary");
+    if (!score) {
+      return "unknown";
+    }
+
+    const classList = score.className || "";
+    if (classList.includes("overwhelmingly_positive")) return "overwhelmingly_positive";
+    if (classList.includes("very_positive")) return "very_positive";
+    if (classList.includes("positive")) return "positive";
+    if (classList.includes("mixed")) return "mixed";
+    if (classList.includes("negative") || classList.includes("mostly_negative") || classList.includes("very_negative")) return "negative";
+    return "unknown";
+  }
+
+  function reviewAllowed(state, category) {
+    if (state.hideMixedOrWorse && (category === "mixed" || category === "negative")) {
+      return false;
+    }
+
+    if (state.reviewFilter === "positive_plus") {
+      return ["positive", "very_positive", "overwhelmingly_positive"].includes(category);
+    }
+
+    if (state.reviewFilter === "very_positive_plus") {
+      return ["very_positive", "overwhelmingly_positive"].includes(category);
+    }
+
+    return true;
+  }
+
+  function platformAllowed(state, row) {
+    const win = !!row.querySelector(".platform_img.win");
+    const mac = !!row.querySelector(".platform_img.mac");
+    const linux = !!row.querySelector(".platform_img.linux");
+
+    const allowWin = state.platformWin && win;
+    const allowMac = state.platformMac && mac;
+    const allowLinux = state.platformLinux && linux;
+
+    const noPlatformInfo = !win && !mac && !linux;
+    return noPlatformInfo || allowWin || allowMac || allowLinux;
+  }
+
+  function removePriceTag(row) {
+    const oldTag = row.querySelector(".ssh-price-tag");
+    if (oldTag) {
+      oldTag.remove();
+    }
+
+    row.classList.remove("ssh-price-low", "ssh-price-mid", "ssh-price-high");
+  }
+
 
   function setupListeners() {
     chrome.storage.onChanged.addListener((changes, areaName) => {
