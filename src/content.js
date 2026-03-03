@@ -243,6 +243,100 @@
     row.classList.remove("ssh-price-low", "ssh-price-mid", "ssh-price-high");
   }
 
+  function appendPriceTag(row, price, tier) {
+    const titleContainer = row.querySelector(".search_name");
+    if (!titleContainer) {
+      return;
+    }
+
+    const tag = document.createElement("span");
+    tag.className = `ssh-price-tag ${tier}`;
+    tag.textContent = `$${price.toFixed(2)}`;
+    titleContainer.prepend(tag);
+  }
+
+  function applyPriceMarking(row, state, price) {
+    removePriceTag(row);
+
+    if (!state.enablePriceHighlight) {
+      return;
+    }
+
+    let tier = "high";
+    if (price <= state.lowPrice) {
+      tier = "low";
+      row.classList.add("ssh-price-low");
+    } else if (price <= state.midPrice) {
+      tier = "mid";
+      row.classList.add("ssh-price-mid");
+    } else {
+      row.classList.add("ssh-price-high");
+    }
+
+    appendPriceTag(row, price, tier);
+  }
+
+  function filterRow(row, state) {
+    const price = parsePriceDollars(row);
+    const discount = parseDiscountPercent(row);
+    const reviewCount = parseReviewCount(row);
+    const positivePercent = parsePositivePercent(row);
+    const releaseYear = parseReleaseYear(row);
+    const review = getReviewCategory(row);
+    const rowText = (row.textContent || "").toLowerCase();
+    const href = (row.getAttribute("href") || "").toLowerCase();
+
+    const meetsPrice = state.maxPrice <= 0 || price <= state.maxPrice;
+    const meetsDiscount = discount >= state.minDiscount;
+    const meetsReviewCount = reviewCount >= state.minReviews;
+    const meetsUserScore = state.minUserScore <= 0 || positivePercent >= state.minUserScore;
+    const meetsReleaseYear = state.minReleaseYear <= 0 || (releaseYear > 0 && releaseYear >= state.minReleaseYear);
+    const specialsOk = !state.specials || discount > 0;
+    const hideF2pOk = !state.hidef2p || price > 0;
+    const dlcOk = !state.ndl || (!/\bdlc\b/i.test(rowText) && !href.includes("/dlc/"));
+    const comingSoonOk = !state.hideComingSoon || !/coming soon|yakinda|to be announced/.test(rowText);
+    const reviewOk = reviewAllowed(state, review);
+    const platformOk = platformAllowed(state, row);
+    const earlyAccessOk = !state.hideEarlyAccess || !/early access|erken erisim/.test(rowText);
+
+    const visible = meetsPrice && meetsDiscount && meetsReviewCount && meetsUserScore && meetsReleaseYear && specialsOk && hideF2pOk && dlcOk && comingSoonOk && reviewOk && platformOk && earlyAccessOk;
+    row.classList.toggle("ssh-hidden", !visible);
+
+    applyPriceMarking(row, state, price);
+
+    return {
+      row,
+      visible,
+      price,
+      discount
+    };
+  }
+
+  function sortRowsByState(container, state, rowMeta) {
+    if (!container || state.sortBy === "default") {
+      return;
+    }
+
+    const visibleRows = rowMeta.filter((item) => item.visible);
+    const hiddenRows = rowMeta.filter((item) => !item.visible);
+
+    const compareMap = {
+      price_asc: (a, b) => a.price - b.price,
+      price_desc: (a, b) => b.price - a.price,
+      discount_desc: (a, b) => b.discount - a.discount
+    };
+
+    const compareFn = compareMap[state.sortBy];
+    if (!compareFn) {
+      return;
+    }
+
+    visibleRows.sort(compareFn);
+    [...visibleRows, ...hiddenRows].forEach((item) => {
+      container.appendChild(item.row);
+    });
+  }
+
 
   function setupListeners() {
     chrome.storage.onChanged.addListener((changes, areaName) => {
