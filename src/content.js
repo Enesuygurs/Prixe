@@ -337,6 +337,60 @@
     });
   }
 
+  function applyAllFilters(state) {
+    ensureStyle();
+
+    const rows = Array.from(document.querySelectorAll(ROW_SELECTOR));
+    const rowMeta = rows.map((row) => filterRow(row, state));
+    const container = document.querySelector(ROW_CONTAINER_SELECTOR);
+
+    skipMutationRefresh = true;
+    sortRowsByState(container, state, rowMeta);
+    setTimeout(() => {
+      skipMutationRefresh = false;
+    }, 50);
+
+    const visibleCount = rowMeta.filter((item) => item.visible).length;
+    return {
+      total: rowMeta.length,
+      visible: visibleCount,
+      hidden: rowMeta.length - visibleCount
+    };
+  }
+
+  function debounce(fn, waitMs) {
+    let timerId = null;
+    return (...args) => {
+      if (timerId) {
+        clearTimeout(timerId);
+      }
+      timerId = setTimeout(() => fn(...args), waitMs);
+    };
+  }
+
+  async function loadStateFromStorage() {
+    const data = await chrome.storage.local.get(STORAGE_KEY);
+    return normalizeState(data[STORAGE_KEY]);
+  }
+
+  function refreshFromCurrentState() {
+    applyAllFilters(currentState);
+  }
+
+  function setupMutationObserver() {
+    const debouncedRefresh = debounce(refreshFromCurrentState, 200);
+    const observer = new MutationObserver(() => {
+      if (skipMutationRefresh) {
+        return;
+      }
+      debouncedRefresh();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
 
   function setupListeners() {
     chrome.storage.onChanged.addListener((changes, areaName) => {
