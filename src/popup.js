@@ -165,6 +165,132 @@ function setCheckboxLabel(labelId, text) {
   label.append(` ${text}`);
 }
 
+function applyLanguage(lang) {
+  currentLang = lang === "en" ? "en" : "tr";
+  document.documentElement.lang = currentLang;
+
+  homeBtn.title = t("homeTitle");
+  checkboxBtn.title = t("checkboxTitle");
+  settingsBtn.title = t("settingsTitle");
+
+  setText("settingsHint", t("settingsHint"));
+  setText("labelFilterSettings", t("labelFilterSettings"));
+  setText("labelLanguageSection", t("labelLanguageSection"));
+  setText("homeHint", t("homeHint"));
+  setText("labelHomeFiltersSection", t("labelHomeFiltersSection"));
+  setText("labelCheckboxFiltersSection", t("labelCheckboxFiltersSection"));
+  setText("labelLowPrice", t("labelLowPrice"));
+  setText("labelMidPrice", t("labelMidPrice"));
+  setText("labelLanguage", t("labelLanguage"));
+  setText("labelMaxPrice", t("labelMaxPrice"));
+  setText("labelMinDiscount", t("labelMinDiscount"));
+  setText("labelReviewFilter", t("labelReviewFilter"));
+  setText("reviewAny", t("reviewAny"));
+  setText("reviewPositivePlus", t("reviewPositivePlus"));
+  setText("reviewVeryPositivePlus", t("reviewVeryPositivePlus"));
+  setText("labelMinReviews", t("labelMinReviews"));
+  setText("labelSortBy", t("labelSortBy"));
+  setText("sortDefault", t("sortDefault"));
+  setText("sortPriceAsc", t("sortPriceAsc"));
+  setText("sortPriceDesc", t("sortPriceDesc"));
+  setText("sortDiscountDesc", t("sortDiscountDesc"));
+  setText("labelMinUserScore", t("labelMinUserScore"));
+  setText("labelMinReleaseYear", t("labelMinReleaseYear"));
+  setText("allYearsOption", t("allYearsOption"));
+
+  setCheckboxLabel("labelEnablePriceHighlight", t("labelEnablePriceHighlight"));
+  setCheckboxLabel("labelHideMixedOrWorse", t("labelHideMixedOrWorse"));
+  setCheckboxLabel("labelSpecials", t("labelSpecials"));
+  setCheckboxLabel("labelHidef2p", t("labelHidef2p"));
+  setCheckboxLabel("labelNdl", t("labelNdl"));
+  setCheckboxLabel("labelHideEarlyAccess", t("labelHideEarlyAccess"));
+  setCheckboxLabel("labelOnlyTradingCards", t("labelOnlyTradingCards"));
+  setCheckboxLabel("labelOnlyAchievements", t("labelOnlyAchievements"));
+  setCheckboxLabel("labelOnlyCloudSaves", t("labelOnlyCloudSaves"));
+  setCheckboxLabel("labelHideComingSoon", t("labelHideComingSoon"));
+
+  setText("applyBtn", t("applyBtn"));
+  setText("openSearchBtn", t("openSearchBtn"));
+  setText("resetBtn", t("resetBtn"));
+  setText("saveSettingsBtn", t("saveSettingsBtn"));
+
+  const languageSelect = document.getElementById("languageSelect");
+  if (languageSelect) {
+    languageSelect.value = currentLang;
+  }
+}
+
+function setStatus(text, isError = false) {
+  statusEl.textContent = text;
+  statusEl.style.color = isError ? "#ff9a9a" : "#8ce0aa";
+}
+
+function togglePanel(panel) {
+  const showHome = panel === "home";
+  const showCheckbox = panel === "checkbox";
+  const showSettings = panel === "settings";
+
+  homePanel.classList.toggle("hidden", !showHome);
+  checkboxPanel.classList.toggle("hidden", !showCheckbox);
+  settingsPanel.classList.toggle("hidden", !showSettings);
+
+  homeBtn.classList.toggle("active", showHome);
+  checkboxBtn.classList.toggle("active", showCheckbox);
+  settingsBtn.classList.toggle("active", showSettings);
+}
+
+function readUIState() {
+  return {
+    maxPrice: Number(document.getElementById("maxPrice").value || 0),
+    specials: document.getElementById("specials").checked,
+    hidef2p: document.getElementById("hidef2p").checked,
+    ndl: document.getElementById("ndl").checked,
+    minDiscount: Number(document.getElementById("minDiscount").value || 0),
+    minReviews: Number(document.getElementById("minReviews").value || 0),
+    minUserScore: Number(document.getElementById("minUserScore").value || 0),
+    minReleaseYear: Number(document.getElementById("minReleaseYear").value || 0),
+    sortBy: document.getElementById("sortBy").value,
+    reviewFilter: document.getElementById("reviewFilter").value,
+    onlyTradingCards: document.getElementById("onlyTradingCards").checked,
+    onlyAchievements: document.getElementById("onlyAchievements").checked,
+    onlyCloudSaves: document.getElementById("onlyCloudSaves").checked,
+    hideComingSoon: document.getElementById("hideComingSoon").checked,
+    platformWin: document.getElementById("platformWin").checked,
+    platformMac: document.getElementById("platformMac").checked,
+    platformLinux: document.getElementById("platformLinux").checked,
+    hideEarlyAccess: document.getElementById("hideEarlyAccess").checked,
+    hideMixedOrWorse: document.getElementById("hideMixedOrWorse").checked,
+    enablePriceHighlight: document.getElementById("enablePriceHighlight").checked,
+    lowPrice: Number(document.getElementById("lowPrice").value || 0),
+    midPrice: Number(document.getElementById("midPrice").value || 0)
+  };
+}
+
+function writeUIState(state) {
+  document.getElementById("maxPrice").value = state.maxPrice;
+  document.getElementById("specials").checked = state.specials;
+  document.getElementById("hidef2p").checked = state.hidef2p;
+  document.getElementById("ndl").checked = state.ndl;
+  document.getElementById("minDiscount").value = String(state.minDiscount);
+  document.getElementById("minReviews").value = String(state.minReviews);
+  document.getElementById("minUserScore").value = String(state.minUserScore);
+  document.getElementById("minReleaseYear").value = String(state.minReleaseYear);
+  document.getElementById("sortBy").value = state.sortBy;
+  document.getElementById("reviewFilter").value = state.reviewFilter;
+  document.getElementById("onlyTradingCards").checked = state.onlyTradingCards;
+  document.getElementById("onlyAchievements").checked = state.onlyAchievements;
+  document.getElementById("onlyCloudSaves").checked = state.onlyCloudSaves;
+  document.getElementById("hideComingSoon").checked = state.hideComingSoon;
+  document.getElementById("platformWin").checked = state.platformWin;
+  document.getElementById("platformMac").checked = state.platformMac;
+  document.getElementById("platformLinux").checked = state.platformLinux;
+  document.getElementById("hideEarlyAccess").checked = state.hideEarlyAccess;
+  document.getElementById("hideMixedOrWorse").checked = state.hideMixedOrWorse;
+  document.getElementById("enablePriceHighlight").checked = state.enablePriceHighlight;
+  document.getElementById("lowPrice").value = state.lowPrice;
+  document.getElementById("midPrice").value = state.midPrice;
+}
+
 
 async function bootstrap() {
   const data = await chrome.storage.local.get([STORAGE_KEYS.state, STORAGE_KEYS.language]);
