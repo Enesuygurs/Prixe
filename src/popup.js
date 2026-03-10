@@ -291,6 +291,61 @@ function writeUIState(state) {
   document.getElementById("midPrice").value = state.midPrice;
 }
 
+function mergeState(partial) {
+  return {
+    ...DEFAULT_STATE,
+    ...(partial || {})
+  };
+}
+
+function sanitizeState(inputState) {
+  const merged = mergeState(inputState);
+  const numeric = (value, min = 0) => {
+    const n = Number(value);
+    if (!Number.isFinite(n)) {
+      return min;
+    }
+    return Math.max(min, n);
+  };
+
+  return {
+    ...merged,
+    maxPrice: numeric(merged.maxPrice),
+    minDiscount: numeric(merged.minDiscount),
+    minReviews: numeric(merged.minReviews),
+    minUserScore: numeric(merged.minUserScore),
+    minReleaseYear: numeric(merged.minReleaseYear),
+    lowPrice: numeric(merged.lowPrice),
+    midPrice: numeric(merged.midPrice, 1),
+    sortBy: ["default", "price_asc", "price_desc", "discount_desc"].includes(merged.sortBy) ? merged.sortBy : "default"
+  };
+}
+
+function buildSteamSearchUrl(state, existingUrl) {
+  const url = new URL(existingUrl || "https://store.steampowered.com/search/");
+  if (!url.pathname.startsWith("/search")) {
+    url.pathname = "/search/";
+    url.search = "";
+  }
+
+  const setBool = (key, value) => {
+    if (value) {
+      url.searchParams.set(key, "1");
+    } else {
+      url.searchParams.delete(key);
+    }
+  };
+
+  if (state.maxPrice > 0) {
+    url.searchParams.set("maxprice", String(state.maxPrice));
+  } else {
+    url.searchParams.delete("maxprice");
+  }
+
+  setBool("specials", state.specials);
+  setBool("hidef2p", state.hidef2p);
+  setBool("ndl", state.ndl);
+
 
 async function bootstrap() {
   const data = await chrome.storage.local.get([STORAGE_KEYS.state, STORAGE_KEYS.language]);
