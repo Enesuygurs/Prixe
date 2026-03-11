@@ -346,6 +346,70 @@ function buildSteamSearchUrl(state, existingUrl) {
   setBool("hidef2p", state.hidef2p);
   setBool("ndl", state.ndl);
 
+  const updateCategoryFeature = (featureId, enabled) => {
+    const raw = url.searchParams.get("category2");
+    let features = raw ? raw.split(",").map((item) => item.trim()).filter(Boolean) : [];
+    features = features.filter((item) => /^\d+$/.test(item));
+
+    if (enabled) {
+      if (!features.includes(featureId)) {
+        features.push(featureId);
+      }
+    } else {
+      features = features.filter((item) => item !== featureId);
+    }
+
+    if (features.length > 0) {
+      url.searchParams.set("category2", features.join(","));
+    } else {
+      url.searchParams.delete("category2");
+    }
+  };
+
+  // Steam feature IDs in category2
+  updateCategoryFeature("29", state.onlyTradingCards);
+  updateCategoryFeature("22", state.onlyAchievements);
+  updateCategoryFeature("23", state.onlyCloudSaves);
+
+  return url.toString();
+}
+
+async function getActiveTab() {
+  const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+  return tabs[0];
+}
+
+async function saveState(state) {
+  await chrome.storage.local.set({ [STORAGE_KEYS.state]: state });
+}
+
+async function notifyContentScript(tabId, state) {
+  try {
+    const response = await chrome.tabs.sendMessage(tabId, {
+      action: "steamFiltersUpdated",
+      payload: state
+    });
+    return response || null;
+  } catch (err) {
+    // Content script may not be ready on this tab yet.
+    return null;
+  }
+}
+
+function formatStats(stats) {
+  if (!stats || !Number.isFinite(stats.total) || !Number.isFinite(stats.visible)) {
+    return "";
+  }
+  return ` ${t("visibleText")}: ${stats.visible}/${stats.total}`;
+}
+
+function validatePriceThresholds(state) {
+  if (state.midPrice < state.lowPrice) {
+    return t("errMidLessThanLow");
+  }
+  return null;
+}
+
 
 async function bootstrap() {
   const data = await chrome.storage.local.get([STORAGE_KEYS.state, STORAGE_KEYS.language]);
