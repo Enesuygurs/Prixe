@@ -410,6 +410,71 @@ function validatePriceThresholds(state) {
   return null;
 }
 
+async function applyFiltersToSteam() {
+  const state = sanitizeState(readUIState());
+  writeUIState(state);
+  const validationError = validatePriceThresholds(state);
+  if (validationError) {
+    setStatus(validationError, true);
+    return;
+  }
+
+  await saveState(state);
+
+  const tab = await getActiveTab();
+  const isSteamSearch = !!tab?.url && tab.url.startsWith("https://store.steampowered.com/search");
+  const targetUrl = buildSteamSearchUrl(state, isSteamSearch ? tab.url : "https://store.steampowered.com/search/");
+
+  let runtimeStats = null;
+  if (isSteamSearch) {
+    if (tab.url === targetUrl) {
+      runtimeStats = await notifyContentScript(tab.id, state);
+    } else {
+      await chrome.tabs.update(tab.id, { url: targetUrl });
+    }
+  } else {
+    await chrome.tabs.create({ url: targetUrl });
+  }
+
+  setStatus(`${t("statusApplied")}${formatStats(runtimeStats?.stats)}`);
+}
+
+async function saveSettingsOnly() {
+  const state = sanitizeState(readUIState());
+  writeUIState(state);
+  const validationError = validatePriceThresholds(state);
+  if (validationError) {
+    setStatus(validationError, true);
+    return;
+  }
+
+  await saveState(state);
+  const tab = await getActiveTab();
+  let runtimeStats = null;
+  if (tab?.id && tab.url && tab.url.startsWith("https://store.steampowered.com/search")) {
+    runtimeStats = await notifyContentScript(tab.id, state);
+  }
+  setStatus(`${t("statusSaved")}${formatStats(runtimeStats?.stats)}`);
+}
+
+async function openSteamSearch() {
+  const state = sanitizeState(readUIState());
+  writeUIState(state);
+  await saveState(state);
+  const targetUrl = buildSteamSearchUrl(state, "https://store.steampowered.com/search/");
+  await chrome.tabs.create({ url: targetUrl });
+  setStatus(t("statusSearchOpened"));
+}
+
+async function resetState() {
+  writeUIState(DEFAULT_STATE);
+  await saveState(DEFAULT_STATE);
+  const tab = await getActiveTab();
+  if (tab?.id && tab.url && tab.url.startsWith("https://store.steampowered.com/search")) {
+    await notifyContentScript(tab.id, DEFAULT_STATE);
+  }
+  setStatus(t("statusReset"));
+}
 
 async function bootstrap() {
   const data = await chrome.storage.local.get([STORAGE_KEYS.state, STORAGE_KEYS.language]);
