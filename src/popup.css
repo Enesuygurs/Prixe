@@ -3,6 +3,19 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+html,
+body {
+  overflow: hidden;
 }
 
 body {
@@ -79,7 +92,7 @@ body.popup-mode {
 .settings-panel {
   background: #1a1a24;
   border-bottom: 1px solid #2a2a35;
-  overflow-y: auto;
+  overflow: hidden;
   flex: 1;
 }
 
@@ -102,7 +115,7 @@ body.popup-mode {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow: hidden;
   background: #1a1a24;
 }
 
