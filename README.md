@@ -2,6 +2,10 @@
 
 Prixe is a Chrome extension that provides advanced filtering and visual price highlighting for faster game discovery on the Steam Search page.
 
+<img width="396" height="498" alt="1" src="https://github.com/user-attachments/assets/4b9c612f-45be-46d3-ae3c-b49c15c37b13" />
+<img width="396" height="498" alt="2" src="https://github.com/user-attachments/assets/cdc1329f-0447-4590-9b0c-7cb3c0bfec4e" />
+<img width="396" height="498" alt="3" src="https://github.com/user-attachments/assets/17073d8d-cd26-4aee-99ad-5cb315260e8e" />
+
 ## Features
 
 - Quickly apply Steam Search URL filters from the popup
