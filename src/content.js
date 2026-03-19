@@ -422,11 +422,37 @@
     }
 
     const classList = score.className || "";
-    if (classList.includes("overwhelmingly_positive")) return "overwhelmingly_positive";
-    if (classList.includes("very_positive")) return "very_positive";
-    if (classList.includes("positive")) return "positive";
-    if (classList.includes("mixed")) return "mixed";
-    if (classList.includes("negative") || classList.includes("mostly_negative") || classList.includes("very_negative")) return "negative";
+
+    // Steam can report generic "positive" class even when the tooltip says "Very Positive".
+    const tooltipText = (score.getAttribute("data-tooltip-html") || "")
+      .replace(/<[^>]*>/g, " ")
+      .toLowerCase();
+
+    if (classList.includes("overwhelmingly_positive") || /ezici derecede olumlu|overwhelmingly positive/i.test(tooltipText)) {
+      return "overwhelmingly_positive";
+    }
+
+    if (classList.includes("very_positive") || /çok olumlu|very positive/i.test(tooltipText)) {
+      return "very_positive";
+    }
+
+    if (classList.includes("mixed") || /karışık|mixed/i.test(tooltipText)) {
+      return "mixed";
+    }
+
+    if (
+      classList.includes("negative") ||
+      classList.includes("mostly_negative") ||
+      classList.includes("very_negative") ||
+      /olumsuz|negative/i.test(tooltipText)
+    ) {
+      return "negative";
+    }
+
+    if (classList.includes("positive") || /olumlu|positive/i.test(tooltipText)) {
+      return "positive";
+    }
+
     return "unknown";
   }
 
