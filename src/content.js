@@ -520,10 +520,16 @@
   }
 
   function ensureAppInfoElement(titleEl) {
+    const headerContainer = titleEl.closest(".apphub_HomeHeaderContent") || titleEl;
+    const parentContainer = headerContainer.parentElement || titleEl.parentElement;
+    if (!parentContainer) {
+      return null;
+    }
+
     const existing = document.getElementById(APP_INFO_ID);
     if (existing) {
-      if (existing.previousElementSibling !== titleEl) {
-        titleEl.insertAdjacentElement("afterend", existing);
+      if (existing.parentElement !== parentContainer || existing.previousElementSibling !== headerContainer) {
+        parentContainer.insertBefore(existing, headerContainer.nextSibling);
       }
       return existing;
     }
@@ -540,7 +546,7 @@
         <div class="prixe-info-line">Oyun suresi: <span class="prixe-info-value" data-field="duration">Yukleniyor...</span></div>
       </div>
     `;
-    titleEl.insertAdjacentElement("afterend", info);
+    parentContainer.insertBefore(info, headerContainer.nextSibling);
     return info;
   }
 
