@@ -1,4 +1,5 @@
 const DEFAULT_STATE = {
+  masterEnabled: true,
   maxPrice: 5,
   specials: true,
   hidef2p: true,
@@ -30,6 +31,7 @@ const STORAGE_KEYS = {
 
 const STRINGS = {
   tr: {
+    labelMasterEnabled: "Prixe aktif",
     homeTitle: "Ana Sayfa",
     checkboxTitle: "Checkbox'lar",
     settingsTitle: "Ayarlar",
@@ -75,9 +77,11 @@ const STRINGS = {
     statusApplied: "Steam arama filtreleri uygulandı.",
     statusSaved: "Ayarlar kaydedildi.",
     statusSearchOpened: "Steam Search açıldı.",
-    statusReset: "Varsayılan ayarlara dönüldü."
+    statusReset: "Varsayılan ayarlara dönüldü.",
+    statusDisabled: "Prixe kapalı. Steam sayfasında işlem yapılmadı."
   },
   en: {
+    labelMasterEnabled: "Prixe enabled",
     homeTitle: "Home",
     checkboxTitle: "Checkboxes",
     settingsTitle: "Settings",
@@ -123,7 +127,8 @@ const STRINGS = {
     statusApplied: "Steam search filters applied.",
     statusSaved: "Settings saved.",
     statusSearchOpened: "Steam Search opened.",
-    statusReset: "Defaults restored."
+    statusReset: "Defaults restored.",
+    statusDisabled: "Prixe is disabled. No action was applied on Steam page."
   }
 };
 
@@ -198,6 +203,7 @@ function applyLanguage(lang) {
   setText("labelMinReleaseYear", t("labelMinReleaseYear"));
   setText("allYearsOption", t("allYearsOption"));
 
+  setCheckboxLabel("labelMasterEnabled", t("labelMasterEnabled"));
   setCheckboxLabel("labelEnablePriceHighlight", t("labelEnablePriceHighlight"));
   setCheckboxLabel("labelHideMixedOrWorse", t("labelHideMixedOrWorse"));
   setCheckboxLabel("labelSpecials", t("labelSpecials"));
@@ -241,6 +247,7 @@ function togglePanel(panel) {
 
 function readUIState() {
   return {
+    masterEnabled: document.getElementById("masterEnabled").checked,
     maxPrice: Number(document.getElementById("maxPrice").value || 0),
     specials: document.getElementById("specials").checked,
     hidef2p: document.getElementById("hidef2p").checked,
@@ -267,6 +274,7 @@ function readUIState() {
 }
 
 function writeUIState(state) {
+  document.getElementById("masterEnabled").checked = state.masterEnabled;
   document.getElementById("maxPrice").value = state.maxPrice;
   document.getElementById("specials").checked = state.specials;
   document.getElementById("hidef2p").checked = state.hidef2p;
@@ -326,6 +334,11 @@ function buildSteamSearchUrl(state, existingUrl) {
   if (!url.pathname.startsWith("/search")) {
     url.pathname = "/search/";
     url.search = "";
+  }
+
+  if (!state.masterEnabled) {
+    url.search = "";
+    return url.toString();
   }
 
   const setBool = (key, value) => {
@@ -421,6 +434,15 @@ async function applyFiltersToSteam() {
 
   await saveState(state);
 
+  if (!state.masterEnabled) {
+    const tab = await getActiveTab();
+    if (tab?.id && tab.url && tab.url.startsWith("https://store.steampowered.com/search")) {
+      await notifyContentScript(tab.id, state);
+    }
+    setStatus(t("statusDisabled"));
+    return;
+  }
+
   const tab = await getActiveTab();
   const isSteamSearch = !!tab?.url && tab.url.startsWith("https://store.steampowered.com/search");
   const targetUrl = buildSteamSearchUrl(state, isSteamSearch ? tab.url : "https://store.steampowered.com/search/");
@@ -449,10 +471,15 @@ async function saveSettingsOnly() {
   }
 
   await saveState(state);
+
   const tab = await getActiveTab();
   let runtimeStats = null;
   if (tab?.id && tab.url && tab.url.startsWith("https://store.steampowered.com/search")) {
     runtimeStats = await notifyContentScript(tab.id, state);
+  }
+  if (!state.masterEnabled) {
+    setStatus(t("statusDisabled"));
+    return;
   }
   setStatus(`${t("statusSaved")}${formatStats(runtimeStats?.stats)}`);
 }
@@ -461,8 +488,14 @@ async function openSteamSearch() {
   const state = sanitizeState(readUIState());
   writeUIState(state);
   await saveState(state);
-  const targetUrl = buildSteamSearchUrl(state, "https://store.steampowered.com/search/");
+  const targetUrl = state.masterEnabled
+    ? buildSteamSearchUrl(state, "https://store.steampowered.com/search/")
+    : "https://store.steampowered.com/search/";
   await chrome.tabs.create({ url: targetUrl });
+  if (!state.masterEnabled) {
+    setStatus(t("statusDisabled"));
+    return;
+  }
   setStatus(t("statusSearchOpened"));
 }
 

@@ -1,5 +1,6 @@
 (() => {
   const DEFAULT_STATE = {
+    masterEnabled: true,
     maxPrice: 5,
     specials: true,
     hidef2p: true,
@@ -243,6 +244,11 @@
     row.classList.remove("ssh-price-low", "ssh-price-mid", "ssh-price-high");
   }
 
+  function resetRowVisualState(row) {
+    row.classList.remove("ssh-hidden");
+    removePriceTag(row);
+  }
+
   function appendPriceTag(row, price, tier) {
     const titleContainer = row.querySelector(".search_name");
     if (!titleContainer) {
@@ -341,6 +347,18 @@
     ensureStyle();
 
     const rows = Array.from(document.querySelectorAll(ROW_SELECTOR));
+
+    if (!state.masterEnabled) {
+      rows.forEach((row) => {
+        resetRowVisualState(row);
+      });
+      return {
+        total: rows.length,
+        visible: rows.length,
+        hidden: 0
+      };
+    }
+
     const rowMeta = rows.map((row) => filterRow(row, state));
     const container = document.querySelector(ROW_CONTAINER_SELECTOR);
 
