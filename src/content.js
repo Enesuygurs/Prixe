@@ -118,7 +118,7 @@
 
       .prixe-info-line {
         background: #00000036;
-        padding: 8px;
+        padding: 12px;
         margin: 4px;
         font-size: 14px;
       }
