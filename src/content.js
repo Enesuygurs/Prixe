@@ -83,6 +83,23 @@
         text-transform: none;
         white-space: nowrap;
       }
+
+      #${APP_ACTIONS_ID} .prixe-btn-steam-card {
+        color: red !important;
+        background: #c5960969 !important;
+      }
+
+      #${APP_ACTIONS_ID} .prixe-btn-steam-card span {
+        color: #ffd760ed !important;
+      }
+
+      #${APP_ACTIONS_ID} .prixe-btn-gameplay {
+        background: #ff008b5e !important;
+      }
+
+      #${APP_ACTIONS_ID} .prixe-btn-gameplay span {
+        color: #ff8dcb !important;
+      }
     `;
 
     document.head.appendChild(style);
@@ -447,9 +464,12 @@
     }
   }
 
-  function createActionButton(text, href) {
+  function createActionButton(text, href, extraClass = "") {
     const button = document.createElement("a");
     button.className = "btnv6_blue_hoverfade btn_medium";
+    if (extraClass) {
+      button.classList.add(extraClass);
+    }
     button.href = href;
     button.target = "_blank";
     button.rel = "noopener noreferrer";
@@ -494,8 +514,8 @@
     const steamCardUrl = `https://www.steamcardexchange.net/index.php?gamepage-appid-${appId}`;
     const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${title} Gameplay`)}`;
 
-    actions.appendChild(createActionButton("Steam Card", steamCardUrl));
-    actions.appendChild(createActionButton("Gameplay", youtubeUrl));
+    actions.appendChild(createActionButton("Steam Card", steamCardUrl, "prixe-btn-steam-card"));
+    actions.appendChild(createActionButton("Gameplay", youtubeUrl, "prixe-btn-gameplay"));
 
     titleEl.appendChild(actions);
   }
