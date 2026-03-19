@@ -104,6 +104,14 @@
         color: #ff8dcb !important;
       }
 
+      #${APP_ACTIONS_ID} .prixe-btn-steamdb {
+        background: #0b5f9f !important;
+      }
+
+      #${APP_ACTIONS_ID} .prixe-btn-steamdb span {
+        color: #c9e9ff !important;
+      }
+
       .saleEventBannerStyle:hover {
         box-shadow: unset;
       }
@@ -530,8 +538,10 @@
     actions.id = APP_ACTIONS_ID;
     const steamCardUrl = `https://www.steamcardexchange.net/index.php?gamepage-appid-${appId}`;
     const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${title} Gameplay`)}`;
+    const steamDbUrl = `https://steamdb.info/app/${appId}/`;
     actions.appendChild(createActionButton("Steam Card", steamCardUrl, "prixe-btn-steam-card"));
     actions.appendChild(createActionButton("Gameplay", youtubeUrl, "prixe-btn-gameplay"));
+    actions.appendChild(createActionButton("SteamDB", steamDbUrl, "prixe-btn-steamdb"));
     titleEl.appendChild(actions);
     return actions;
   }
