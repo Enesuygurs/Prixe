@@ -4,7 +4,7 @@
     maxPrice: 5,
     specials: true,
     hidef2p: true,
-    ndl: true,
+    category1: 998,
     minDiscount: 0,
     minReviews: 0,
     minUserScore: 0,
@@ -506,6 +506,36 @@
     appendPriceTag(row, price, tier);
   }
 
+  function isDlcRow(row, rowText, href) {
+    if (href.includes("/dlc/")) {
+      return true;
+    }
+
+    const typeText = (
+      row.querySelector(".search_type, .col.search_type, .search_type.ellipsis")?.textContent ||
+      row.getAttribute("data-ds-itemkey") ||
+      ""
+    ).toLowerCase();
+
+    let hasDlcTag = false;
+    const rawTagIds = row.getAttribute("data-ds-tagids") || "";
+    if (rawTagIds) {
+      try {
+        const tagIds = JSON.parse(rawTagIds);
+        hasDlcTag = Array.isArray(tagIds) && tagIds.map((id) => Number(id)).includes(21);
+      } catch {
+        hasDlcTag = false;
+      }
+    }
+
+    const tooltipText = (row.querySelector(".search_review_summary")?.getAttribute("data-tooltip-html") || "")
+      .replace(/<[^>]*>/g, " ")
+      .toLowerCase();
+
+    const dlcPattern = /\bdlc\b|downloadable content|i̇ndirilebilir içerik|indirilebilir içerik|ek içerik|add[-\s]?on|expansion|chapter|bölüm|season pass|soundtrack|ost|content pack|character pack|cosmetic pack/i;
+    return hasDlcTag || dlcPattern.test(typeText) || dlcPattern.test(rowText) || dlcPattern.test(tooltipText);
+  }
+
   function filterRow(row, state) {
     const price = parsePriceDollars(row);
     const discount = parseDiscountPercent(row);
@@ -523,13 +553,12 @@
     const meetsReleaseYear = state.minReleaseYear <= 0 || (releaseYear > 0 && releaseYear >= state.minReleaseYear);
     const specialsOk = !state.specials || discount > 0;
     const hideF2pOk = !state.hidef2p || price > 0;
-    const dlcOk = !state.ndl || (!/\bdlc\b/i.test(rowText) && !href.includes("/dlc/"));
     const comingSoonOk = !state.hideComingSoon || !/coming soon|yakinda|to be announced/.test(rowText);
     const reviewOk = reviewAllowed(state, review);
     const platformOk = platformAllowed(state, row);
     const earlyAccessOk = !state.hideEarlyAccess || !/early access|erken erisim/.test(rowText);
 
-    const visible = meetsPrice && meetsDiscount && meetsReviewCount && meetsUserScore && meetsReleaseYear && specialsOk && hideF2pOk && dlcOk && comingSoonOk && reviewOk && platformOk && earlyAccessOk;
+    const visible = meetsPrice && meetsDiscount && meetsReviewCount && meetsUserScore && meetsReleaseYear && specialsOk && hideF2pOk && comingSoonOk && reviewOk && platformOk && earlyAccessOk;
     row.classList.toggle("ssh-hidden", !visible);
 
     applyPriceMarking(row, state, price);

@@ -3,7 +3,7 @@ const DEFAULT_STATE = {
   maxPrice: 5,
   specials: true,
   hidef2p: true,
-  ndl: true,
+  category1: 998,
   minDiscount: 0,
   minReviews: 0,
   minUserScore: 0,
@@ -41,9 +41,9 @@ const STRINGS = {
     labelEnablePriceHighlight: "Fiyat işaretleme aktif",
     labelHideMixedOrWorse: "Mixed ve altı gizle",
     labelMaxPrice: "Max fiyat (USD)",
+    labelCategory1: "Kategori",
     labelSpecials: "Sadece indirimde",
     labelHidef2p: "Ücretsizleri gizle",
-    labelNdl: "DLC gizle",
     labelHideEarlyAccess: "Early Access gizle",
     labelMinDiscount: "Min indirim (%)",
     labelReviewFilter: "İnceleme filtresi",
@@ -63,6 +63,15 @@ const STRINGS = {
     labelOnlyAchievements: "Steam başarımları",
     labelOnlyCloudSaves: "Steam Cloud",
     labelHideComingSoon: "Coming Soon gizle",
+    categoryGames: "Oyunlar",
+    categorySoftware: "Yazılım",
+    categoryDlc: "İndirilebilir İçerik",
+    categoryDemos: "Demolar",
+    categorySoundtracks: "Oyun Müzikleri",
+    categoryPlaytest: "Playtest",
+    categoryVideos: "Videolar",
+    categoryMods: "Modlar",
+    categoryHardware: "Donanım",
     applyBtn: "Uygula",
     openSearchBtn: "Steam Aramayı Aç",
     resetBtn: "Sıfırla",
@@ -85,9 +94,9 @@ const STRINGS = {
     labelEnablePriceHighlight: "Enable price highlighting",
     labelHideMixedOrWorse: "Hide Mixed and below",
     labelMaxPrice: "Max price (USD)",
+    labelCategory1: "Category",
     labelSpecials: "Discounted only",
     labelHidef2p: "Hide free to play",
-    labelNdl: "Hide DLC",
     labelHideEarlyAccess: "Hide Early Access",
     labelMinDiscount: "Min discount (%)",
     labelReviewFilter: "Review filter",
@@ -107,6 +116,15 @@ const STRINGS = {
     labelOnlyAchievements: "Steam Achievements",
     labelOnlyCloudSaves: "Steam Cloud",
     labelHideComingSoon: "Hide Coming Soon",
+    categoryGames: "Games",
+    categorySoftware: "Software",
+    categoryDlc: "Downloadable Content",
+    categoryDemos: "Demos",
+    categorySoundtracks: "Game Soundtracks",
+    categoryPlaytest: "Playtest",
+    categoryVideos: "Videos",
+    categoryMods: "Mods",
+    categoryHardware: "Hardware",
     applyBtn: "Apply",
     openSearchBtn: "Open Search",
     resetBtn: "Reset",
@@ -161,9 +179,9 @@ function getSettingsSourceInputs() {
   return [
     "masterEnabled",
     "maxPrice",
+    "category1",
     "specials",
     "hidef2p",
-    "ndl",
     "minDiscount",
     "minReviews",
     "minUserScore",
@@ -191,9 +209,9 @@ function readUIState() {
   return {
     masterEnabled: !!document.getElementById("masterEnabled")?.checked,
     maxPrice: Number(document.getElementById("maxPrice").value || 0),
+    category1: Number(document.getElementById("category1").value || 998),
     specials: document.getElementById("specials").checked,
     hidef2p: document.getElementById("hidef2p").checked,
-    ndl: document.getElementById("ndl").checked,
     minDiscount: Number(document.getElementById("minDiscount").value || 0),
     minReviews: Number(document.getElementById("minReviews").value || 0),
     minUserScore: Number(document.getElementById("minUserScore").value || 0),
@@ -218,9 +236,9 @@ function readUIState() {
 function writeUIState(state) {
   document.getElementById("masterEnabled").checked = state.masterEnabled;
   document.getElementById("maxPrice").value = state.maxPrice;
+  document.getElementById("category1").value = String(state.category1);
   document.getElementById("specials").checked = state.specials;
   document.getElementById("hidef2p").checked = state.hidef2p;
-  document.getElementById("ndl").checked = state.ndl;
   document.getElementById("minDiscount").value = String(state.minDiscount);
   document.getElementById("minReviews").value = String(state.minReviews);
   document.getElementById("minUserScore").value = String(state.minUserScore);
@@ -261,6 +279,9 @@ function sanitizeState(inputState) {
   return {
     ...merged,
     maxPrice: numeric(merged.maxPrice),
+    category1: [998, 994, 21, 10, 990, 989, 992, 997, 993].includes(Number(merged.category1))
+      ? Number(merged.category1)
+      : 998,
     minDiscount: numeric(merged.minDiscount),
     minReviews: numeric(merged.minReviews),
     minUserScore: numeric(merged.minUserScore),
@@ -304,9 +325,10 @@ function buildSteamSearchUrl(state, existingUrl) {
     url.searchParams.delete("maxprice");
   }
 
+  url.searchParams.set("category1", String(state.category1));
+
   setBool("specials", state.specials);
   setBool("hidef2p", state.hidef2p);
-  setBool("ndl", state.ndl);
 
   const updateCategoryFeature = (featureId, enabled) => {
     const raw = url.searchParams.get("category2");
@@ -465,6 +487,7 @@ function applyLanguage(lang) {
   setText("labelLowPrice", t("labelLowPrice"));
   setText("labelMidPrice", t("labelMidPrice"));
   setText("labelMaxPrice", t("labelMaxPrice"));
+  setText("labelCategory1", t("labelCategory1"));
   setText("labelMinDiscount", t("labelMinDiscount"));
   setText("labelReviewFilter", t("labelReviewFilter"));
   setText("reviewAny", t("reviewAny"));
@@ -479,12 +502,20 @@ function applyLanguage(lang) {
   setText("labelMinUserScore", t("labelMinUserScore"));
   setText("labelMinReleaseYear", t("labelMinReleaseYear"));
   setText("allYearsOption", t("allYearsOption"));
+  setText("categoryGames", t("categoryGames"));
+  setText("categorySoftware", t("categorySoftware"));
+  setText("categoryDlc", t("categoryDlc"));
+  setText("categoryDemos", t("categoryDemos"));
+  setText("categorySoundtracks", t("categorySoundtracks"));
+  setText("categoryPlaytest", t("categoryPlaytest"));
+  setText("categoryVideos", t("categoryVideos"));
+  setText("categoryMods", t("categoryMods"));
+  setText("categoryHardware", t("categoryHardware"));
 
   setCheckboxLabel("labelEnablePriceHighlight", t("labelEnablePriceHighlight"));
   setCheckboxLabel("labelHideMixedOrWorse", t("labelHideMixedOrWorse"));
   setCheckboxLabel("labelSpecials", t("labelSpecials"));
   setCheckboxLabel("labelHidef2p", t("labelHidef2p"));
-  setCheckboxLabel("labelNdl", t("labelNdl"));
   setCheckboxLabel("labelHideEarlyAccess", t("labelHideEarlyAccess"));
   setCheckboxLabel("labelOnlyTradingCards", t("labelOnlyTradingCards"));
   setCheckboxLabel("labelOnlyAchievements", t("labelOnlyAchievements"));

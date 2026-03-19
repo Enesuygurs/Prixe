@@ -32,6 +32,20 @@
           <label id="labelMaxPrice" for="maxPrice">Max fiyat (USD)</label>
           <input id="maxPrice" type="number" min="0" step="1">
         </div>
+        <div class="field">
+          <label id="labelCategory1" for="category1">Kategori</label>
+          <select id="category1">
+            <option id="categoryGames" value="998">Oyunlar</option>
+            <option id="categorySoftware" value="994">Yazılım</option>
+            <option id="categoryDlc" value="21">İndirilebilir İçerik</option>
+            <option id="categoryDemos" value="10">Demolar</option>
+            <option id="categorySoundtracks" value="990">Oyun Müzikleri</option>
+            <option id="categoryPlaytest" value="989">Playtest</option>
+            <option id="categoryVideos" value="992">Videolar</option>
+            <option id="categoryMods" value="997">Modlar</option>
+            <option id="categoryHardware" value="993">Donanım</option>
+          </select>
+        </div>
         <div class="preset-row">
           <button class="chip-btn preset" data-maxprice="5">$5</button>
           <button class="chip-btn preset" data-maxprice="10">$10</button>
@@ -108,7 +122,6 @@
         <div class="check-grid">
           <label id="labelSpecials" class="check-item"><input id="specials" type="checkbox"> Sadece indirimde</label>
           <label id="labelHidef2p" class="check-item"><input id="hidef2p" type="checkbox"> Ücretsizleri gizle</label>
-          <label id="labelNdl" class="check-item"><input id="ndl" type="checkbox"> DLC gizle</label>
           <label id="labelHideEarlyAccess" class="check-item"><input id="hideEarlyAccess" type="checkbox"> Erken erişimi gizle</label>
           <label id="labelOnlyTradingCards" class="check-item"><input id="onlyTradingCards" type="checkbox"> Steam koleksiyon kartları</label>
           <label id="labelOnlyAchievements" class="check-item"><input id="onlyAchievements" type="checkbox"> Steam başarımları</label>
