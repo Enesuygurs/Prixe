@@ -52,16 +52,36 @@
     const style = document.createElement("style");
     style.id = APP_BUTTON_STYLE_ID;
     style.textContent = `
+      #appHubAppName.apphub_AppName {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        width: auto !important;
+        max-width: none !important;
+      }
+
       #${APP_ACTIONS_ID} {
-        float: right;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-top: 2px;
+        display: inline-flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        gap: 8px !important;
+        margin: 0 !important;
+        vertical-align: middle;
+      }
+
+      #${APP_ACTIONS_ID} .btnv6_blue_hoverfade.btn_medium {
+        float: none !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        width: auto !important;
+        margin: 0 !important;
+        white-space: nowrap !important;
       }
 
       #${APP_ACTIONS_ID} .btnv6_blue_hoverfade.btn_medium span {
         text-transform: none;
+        white-space: nowrap;
       }
     `;
 
@@ -454,12 +474,15 @@
     const appId = getAppIdFromUrl();
     const title = getAppTitle();
     const titleEl = document.getElementById("appHubAppName");
-    if (!appId || !title || !titleEl || document.getElementById(APP_ACTIONS_ID)) {
+    if (!appId || !title || !titleEl) {
       return;
     }
 
-    const headerTop = titleEl.closest(".apphub_HeaderStandardTop");
-    if (!headerTop) {
+    const existingActions = document.getElementById(APP_ACTIONS_ID);
+    if (existingActions) {
+      if (existingActions.parentElement !== titleEl) {
+        titleEl.appendChild(existingActions);
+      }
       return;
     }
 
@@ -474,7 +497,7 @@
     actions.appendChild(createActionButton("Steam Card", steamCardUrl));
     actions.appendChild(createActionButton("Gameplay", youtubeUrl));
 
-    titleEl.insertAdjacentElement("afterend", actions);
+    titleEl.appendChild(actions);
   }
 
   function syncAppButtons(state) {
