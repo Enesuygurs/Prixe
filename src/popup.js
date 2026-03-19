@@ -11,7 +11,6 @@ const DEFAULT_STATE = {
   sortBy: "default",
   reviewFilter: "any",
   onlyTradingCards: false,
-  onlyAchievements: false,
   onlyCloudSaves: false,
   hideComingSoon: false,
   hideEarlyAccess: false,
@@ -57,7 +56,6 @@ const STRINGS = {
     labelMinReleaseYear: "Min çıkış yılı",
     allYearsOption: "Tüm yıllar",
     labelOnlyTradingCards: "Steam koleksiyon kartları",
-    labelOnlyAchievements: "Steam başarımları",
     labelOnlyCloudSaves: "Steam Cloud",
     labelHideComingSoon: "Coming Soon gizle",
     categoryGames: "Oyunlar",
@@ -110,7 +108,6 @@ const STRINGS = {
     labelMinReleaseYear: "Min release year",
     allYearsOption: "All years",
     labelOnlyTradingCards: "Steam Trading Cards",
-    labelOnlyAchievements: "Steam Achievements",
     labelOnlyCloudSaves: "Steam Cloud",
     labelHideComingSoon: "Hide Coming Soon",
     categoryGames: "Games",
@@ -186,7 +183,6 @@ function getSettingsSourceInputs() {
     "sortBy",
     "reviewFilter",
     "onlyTradingCards",
-    "onlyAchievements",
     "onlyCloudSaves",
     "hideComingSoon",
     "hideEarlyAccess",
@@ -213,7 +209,6 @@ function readUIState() {
     sortBy: document.getElementById("sortBy").value,
     reviewFilter: document.getElementById("reviewFilter").value,
     onlyTradingCards: document.getElementById("onlyTradingCards").checked,
-    onlyAchievements: document.getElementById("onlyAchievements").checked,
     onlyCloudSaves: document.getElementById("onlyCloudSaves").checked,
     hideComingSoon: document.getElementById("hideComingSoon").checked,
     hideEarlyAccess: document.getElementById("hideEarlyAccess").checked,
@@ -237,7 +232,6 @@ function writeUIState(state) {
   document.getElementById("sortBy").value = state.sortBy;
   document.getElementById("reviewFilter").value = state.reviewFilter;
   document.getElementById("onlyTradingCards").checked = state.onlyTradingCards;
-  document.getElementById("onlyAchievements").checked = state.onlyAchievements;
   document.getElementById("onlyCloudSaves").checked = state.onlyCloudSaves;
   document.getElementById("hideComingSoon").checked = state.hideComingSoon;
   document.getElementById("hideEarlyAccess").checked = state.hideEarlyAccess;
@@ -339,7 +333,6 @@ function buildSteamSearchUrl(state, existingUrl) {
   };
 
   updateCategoryFeature("29", state.onlyTradingCards);
-  updateCategoryFeature("22", state.onlyAchievements);
   updateCategoryFeature("23", state.onlyCloudSaves);
 
   return url.toString();
@@ -506,7 +499,6 @@ function applyLanguage(lang) {
   setCheckboxLabel("labelHidef2p", t("labelHidef2p"));
   setCheckboxLabel("labelHideEarlyAccess", t("labelHideEarlyAccess"));
   setCheckboxLabel("labelOnlyTradingCards", t("labelOnlyTradingCards"));
-  setCheckboxLabel("labelOnlyAchievements", t("labelOnlyAchievements"));
   setCheckboxLabel("labelOnlyCloudSaves", t("labelOnlyCloudSaves"));
   setCheckboxLabel("labelHideComingSoon", t("labelHideComingSoon"));
 
