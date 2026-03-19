@@ -75,32 +75,19 @@ body.popup-mode {
   gap: 6px;
 }
 
-.header-toggle-row {
-  margin: 0;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.05);
-}
-
-.header-toggle-row .steam-toggle-label {
-  font-size: 11px;
-  white-space: nowrap;
-}
-
-.header-toggle-row .steam-switch {
+.header-left .steam-switch {
   width: 46px;
   height: 26px;
 }
 
-.header-toggle-row .steam-slider::before {
+.header-left .steam-slider::before {
   width: 18px;
   height: 18px;
   left: 3px;
   top: 3px;
 }
 
-.header-toggle-row .steam-switch input:checked + .steam-slider::before {
+.header-left .steam-switch input:checked + .steam-slider::before {
   transform: translateX(20px);
 }
 

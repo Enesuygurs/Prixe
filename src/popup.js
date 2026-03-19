@@ -191,7 +191,6 @@ function applyLanguage(lang) {
   setText("homeHint", t("homeHint"));
   setText("labelHomeFiltersSection", t("labelHomeFiltersSection"));
   setText("labelCheckboxFiltersSection", t("labelCheckboxFiltersSection"));
-  setText("labelMasterEnabledHeader", t("labelMasterEnabled"));
   setText("labelLowPrice", t("labelLowPrice"));
   setText("labelMidPrice", t("labelMidPrice"));
   setText("labelLanguage", t("labelLanguage"));
