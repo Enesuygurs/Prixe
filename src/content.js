@@ -26,6 +26,7 @@
   };
 
   const STORAGE_KEY = "steamSearchState";
+  const LANGUAGE_KEY = "steamUiLanguage";
 
   const STYLE_ID = "steam-search-helper-style";
   const APP_INFO_STYLE_ID = "prixe-app-info-style";
@@ -35,10 +36,99 @@
   const ROW_CONTAINER_SELECTOR = "#search_resultsRows";
 
   let currentState = normalizeState(null);
+  let currentLanguage = "tr";
   let skipMutationRefresh = false;
   let activeAppInfoRequestKey = "";
   const appInfoCache = new Map();
   const appInfoRequestedKeys = new Set();
+
+  const APP_TEXTS = {
+    tr: {
+      lowestPriceLabel: "En düşük fiyat",
+      durationLabel: "Oyun süresi",
+      loading: "Yükleniyor...",
+      notFound: "Bulunamadı",
+      unavailable: "Alınamadı",
+      sourcePrefix: "Kaynak"
+    },
+    en: {
+      lowestPriceLabel: "Lowest price",
+      durationLabel: "Playtime",
+      loading: "Loading...",
+      notFound: "Not found",
+      unavailable: "Unavailable",
+      sourcePrefix: "Source"
+    }
+  };
+
+  function getAppText(key) {
+    return APP_TEXTS[currentLanguage]?.[key] || APP_TEXTS.tr[key] || key;
+  }
+
+  function normalizeLanguage(lang) {
+    return lang === "en" ? "en" : "tr";
+  }
+
+  function localizeInfoValue(value) {
+    if (typeof value !== "string") {
+      return getAppText("notFound");
+    }
+
+    const raw = value.trim();
+    if (!raw) {
+      return getAppText("notFound");
+    }
+
+    const trToEn = {
+      "Yükleniyor...": "Loading...",
+      "Bulunamadı": "Not found",
+      "Alınamadı": "Unavailable"
+    };
+
+    const enToTr = {
+      "Loading...": "Yükleniyor...",
+      "Not found": "Bulunamadı",
+      "Unavailable": "Alınamadı"
+    };
+
+    if (currentLanguage === "en") {
+      if (trToEn[raw]) {
+        return trToEn[raw];
+      }
+
+      let converted = raw.replace(/(\d+)\s*saat\s*\(oyuncu ort\.\)/i, "$1 hours (player avg)");
+      converted = converted.replace(/(\d+)\s*saat/i, "$1 hours");
+      return converted;
+    }
+
+    if (enToTr[raw]) {
+      return enToTr[raw];
+    }
+
+    let converted = raw.replace(/(\d+)\s*hours\s*\(player avg\)/i, "$1 saat (oyuncu ort.)");
+    converted = converted.replace(/(\d+)\s*hours/i, "$1 saat");
+    return converted;
+  }
+
+  function applyAppInfoLanguage() {
+    const info = document.getElementById(APP_INFO_ID);
+    if (!info) {
+      return;
+    }
+
+    const lowestLabel = info.querySelector('[data-source-link="lowest-price"]');
+    const durationLabel = info.querySelector('[data-source-link="duration"]');
+    if (lowestLabel) {
+      lowestLabel.textContent = getAppText("lowestPriceLabel");
+    }
+    if (durationLabel) {
+      durationLabel.textContent = getAppText("durationLabel");
+    }
+
+    info.querySelectorAll('.prixe-info-value[data-field]').forEach((node) => {
+      node.textContent = localizeInfoValue(node.textContent || "");
+    });
+  }
 
   function isSearchPage() {
     return window.location.pathname.startsWith("/search");
@@ -594,12 +684,12 @@
       <div class="event_context">PRIXE INFO</div>
       <div class="saleEventBannerStyle saleEventBannerBig prixe-info-block">
         <div class="prixe-info-line prixe-info-line-price">
-          <div class="prixe-info-label-wrap"><a class="prixe-info-source-link" data-source-link="lowest-price" href="https://www.cheapshark.com" target="_blank" rel="noopener noreferrer">En düşük fiyat</a></div>
-          <div class="prixe-info-value-wrap"><span class="prixe-info-value" data-field="lowest-price">Yükleniyor...</span></div>
+          <div class="prixe-info-label-wrap"><a class="prixe-info-source-link" data-source-link="lowest-price" href="https://www.cheapshark.com" target="_blank" rel="noopener noreferrer">${getAppText("lowestPriceLabel")}</a></div>
+          <div class="prixe-info-value-wrap"><span class="prixe-info-value" data-field="lowest-price">${getAppText("loading")}</span></div>
         </div>
         <div class="prixe-info-line prixe-info-line-duration">
-          <div class="prixe-info-label-wrap"><a class="prixe-info-source-link" data-source-link="duration" href="https://howlongtobeat.com" target="_blank" rel="noopener noreferrer">Oyun süresi</a></div>
-          <div class="prixe-info-value-wrap"><span class="prixe-info-value" data-field="duration">Yükleniyor...</span></div>
+          <div class="prixe-info-label-wrap"><a class="prixe-info-source-link" data-source-link="duration" href="https://howlongtobeat.com" target="_blank" rel="noopener noreferrer">${getAppText("durationLabel")}</a></div>
+          <div class="prixe-info-value-wrap"><span class="prixe-info-value" data-field="duration">${getAppText("loading")}</span></div>
         </div>
       </div>
     `;
@@ -620,7 +710,7 @@
 
     const safeUrl = typeof url === "string" && url.trim() ? url : "#";
     link.href = safeUrl;
-    link.title = sourceName ? `Kaynak: ${sourceName}` : "Kaynak";
+    link.title = sourceName ? `${getAppText("sourcePrefix")}: ${sourceName}` : getAppText("sourcePrefix");
   }
 
   function setAppInfoValue(field, value) {
@@ -631,8 +721,8 @@
 
     const target = info.querySelector(`[data-field="${field}"]`);
     if (target) {
-      const safeText = typeof value === "string" && value.trim() ? value : "Bulunamadı";
-      target.textContent = safeText;
+      const safeText = typeof value === "string" && value.trim() ? value : getAppText("notFound");
+      target.textContent = localizeInfoValue(safeText);
     }
   }
 
@@ -654,8 +744,8 @@
 
       if (!response?.ok || !response.data) {
         return {
-          lowestPrice: "Alınamadı",
-          duration: "Alınamadı",
+          lowestPrice: getAppText("unavailable"),
+          duration: getAppText("unavailable"),
           lowestPriceSourceUrl: "https://www.cheapshark.com",
           lowestPriceSourceName: "CheapShark",
           durationSourceUrl: "https://howlongtobeat.com",
@@ -673,8 +763,8 @@
       };
     } catch (error) {
       return {
-        lowestPrice: "Alınamadı",
-        duration: "Alınamadı",
+        lowestPrice: getAppText("unavailable"),
+        duration: getAppText("unavailable"),
         lowestPriceSourceUrl: "https://www.cheapshark.com",
         lowestPriceSourceName: "CheapShark",
         durationSourceUrl: "https://howlongtobeat.com",
@@ -723,8 +813,8 @@
     appInfoRequestedKeys.add(requestKey);
     activeAppInfoRequestKey = requestKey;
     setAppInfoLoading(true);
-    setAppInfoValue("lowest-price", "Yükleniyor...");
-    setAppInfoValue("duration", "Yükleniyor...");
+    setAppInfoValue("lowest-price", getAppText("loading"));
+    setAppInfoValue("duration", getAppText("loading"));
 
     const result = await requestAppInfoFromBackground(appId, title);
     const lowestPrice = result.lowestPrice;
@@ -761,8 +851,11 @@
   }
 
   async function loadStateFromStorage() {
-    const data = await chrome.storage.local.get(STORAGE_KEY);
-    return normalizeState(data[STORAGE_KEY]);
+    const data = await chrome.storage.local.get([STORAGE_KEY, LANGUAGE_KEY]);
+    return {
+      state: normalizeState(data[STORAGE_KEY]),
+      language: normalizeLanguage(data[LANGUAGE_KEY])
+    };
   }
 
   function refreshFromCurrentState() {
@@ -800,6 +893,11 @@
         currentState = normalizeState(changes[STORAGE_KEY].newValue);
         refreshFromCurrentState();
       }
+
+      if (changes[LANGUAGE_KEY]) {
+        currentLanguage = normalizeLanguage(changes[LANGUAGE_KEY].newValue);
+        applyAppInfoLanguage();
+      }
     });
 
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -818,7 +916,9 @@
   }
 
   async function bootstrap() {
-    currentState = await loadStateFromStorage();
+    const loaded = await loadStateFromStorage();
+    currentState = loaded.state;
+    currentLanguage = loaded.language;
     refreshFromCurrentState();
     setupMutationObserver();
     setupListeners();
