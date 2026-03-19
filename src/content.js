@@ -28,13 +28,16 @@
   const STORAGE_KEY = "steamSearchState";
 
   const STYLE_ID = "steam-search-helper-style";
-  const APP_BUTTON_STYLE_ID = "prixe-app-buttons-style";
+  const APP_INFO_STYLE_ID = "prixe-app-info-style";
   const APP_ACTIONS_ID = "prixe-app-actions";
+  const APP_INFO_ID = "prixe-app-info";
   const ROW_SELECTOR = "a.search_result_row";
   const ROW_CONTAINER_SELECTOR = "#search_resultsRows";
 
   let currentState = normalizeState(null);
   let skipMutationRefresh = false;
+  let activeAppInfoRequestKey = "";
+  const appInfoCache = new Map();
 
   function isSearchPage() {
     return window.location.pathname.startsWith("/search");
@@ -44,18 +47,18 @@
     return window.location.pathname.startsWith("/app/");
   }
 
-  function ensureAppButtonsStyle() {
-    if (document.getElementById(APP_BUTTON_STYLE_ID)) {
+  function ensureAppInfoStyle() {
+    if (document.getElementById(APP_INFO_STYLE_ID)) {
       return;
     }
 
     const style = document.createElement("style");
-    style.id = APP_BUTTON_STYLE_ID;
+    style.id = APP_INFO_STYLE_ID;
     style.textContent = `
       #appHubAppName.apphub_AppName {
         display: inline-flex !important;
         align-items: center !important;
-        gap: 10px !important;
+        gap: 12px !important;
         width: auto !important;
         max-width: none !important;
       }
@@ -67,7 +70,6 @@
         align-items: center !important;
         gap: 8px !important;
         margin: 0 !important;
-        vertical-align: middle;
       }
 
       #${APP_ACTIONS_ID} .btnv6_blue_hoverfade.btn_medium {
@@ -100,6 +102,11 @@
       #${APP_ACTIONS_ID} .prixe-btn-gameplay span {
         color: #ff8dcb !important;
       }
+
+      .saleEventBannerStyle:hover {
+        box-shadow: unset;
+      }
+
     `;
 
     document.head.appendChild(style);
@@ -454,11 +461,22 @@
 
   function getAppTitle() {
     const titleEl = document.getElementById("appHubAppName");
-    return (titleEl?.textContent || "").trim();
+    if (!titleEl) {
+      return "";
+    }
+
+    const firstTextNode = Array.from(titleEl.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
+    const titleText = firstTextNode?.nodeValue || titleEl.textContent || "";
+    return titleText.trim();
   }
 
-  function removeAppButtons() {
-    const existing = document.getElementById(APP_ACTIONS_ID);
+  function removeAppInfo() {
+    const actions = document.getElementById(APP_ACTIONS_ID);
+    if (actions) {
+      actions.remove();
+    }
+
+    const existing = document.getElementById(APP_INFO_ID);
     if (existing) {
       existing.remove();
     }
@@ -477,17 +495,136 @@
     const span = document.createElement("span");
     span.textContent = text;
     button.appendChild(span);
-
     return button;
   }
 
-  function mountAppButtons(state) {
+  function ensureAppActionsElement(titleEl, appId, title) {
+    const existing = document.getElementById(APP_ACTIONS_ID);
+    if (existing) {
+      if (existing.parentElement !== titleEl) {
+        titleEl.appendChild(existing);
+      }
+      return existing;
+    }
+
+    ensureAppInfoStyle();
+
+    const actions = document.createElement("div");
+    actions.id = APP_ACTIONS_ID;
+    const steamCardUrl = `https://www.steamcardexchange.net/index.php?gamepage-appid-${appId}`;
+    const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${title} Gameplay`)}`;
+    actions.appendChild(createActionButton("Steam Card", steamCardUrl, "prixe-btn-steam-card"));
+    actions.appendChild(createActionButton("Gameplay", youtubeUrl, "prixe-btn-gameplay"));
+    titleEl.appendChild(actions);
+    return actions;
+  }
+
+  function ensureAppInfoElement(titleEl) {
+    const existing = document.getElementById(APP_INFO_ID);
+    if (existing) {
+      if (existing.previousElementSibling !== titleEl) {
+        titleEl.insertAdjacentElement("afterend", existing);
+      }
+      return existing;
+    }
+
+    ensureAppInfoStyle();
+
+    const info = document.createElement("div");
+    info.id = APP_INFO_ID;
+    info.className = "saleEventBannerLink";
+    info.innerHTML = `
+      <div class="event_context">PRIXE INFO</div>
+      <div class="saleEventBannerStyle saleEventBannerBig prixe-info-block">
+        <div class="prixe-info-line">En dusuk fiyat: <span class="prixe-info-value" data-field="lowest-price">Yukleniyor...</span></div>
+        <div class="prixe-info-line">Oyun suresi: <span class="prixe-info-value" data-field="duration">Yukleniyor...</span></div>
+      </div>
+    `;
+    titleEl.insertAdjacentElement("afterend", info);
+    return info;
+  }
+
+  function setAppInfoValue(field, value) {
+    const info = document.getElementById(APP_INFO_ID);
+    if (!info) {
+      return;
+    }
+
+    const target = info.querySelector(`[data-field="${field}"]`);
+    if (target) {
+      target.textContent = value;
+    }
+  }
+
+  function setAppInfoLoading(isLoading) {
+    const info = document.getElementById(APP_INFO_ID);
+    if (!info) {
+      return;
+    }
+
+    info.classList.toggle("is-loading", isLoading);
+  }
+
+  async function fetchLowestPriceBySteamAppId(appId) {
+    try {
+      const response = await fetch(`https://www.cheapshark.com/api/1.0/games?steamAppID=${encodeURIComponent(appId)}`, {
+        cache: "no-store"
+      });
+
+      if (!response.ok) {
+        return "Bulunamadi";
+      }
+
+      const data = await response.json();
+      if (!Array.isArray(data) || data.length === 0) {
+        return "Bulunamadi";
+      }
+
+      const prices = data
+        .map((item) => Number(item?.cheapest))
+        .filter((price) => Number.isFinite(price) && price > 0);
+
+      if (prices.length === 0) {
+        return "Bulunamadi";
+      }
+
+      const minPrice = Math.min(...prices);
+      return `$${minPrice.toFixed(2)}`;
+    } catch (error) {
+      return "Alinamadi";
+    }
+  }
+
+  async function fetchHowLongToBeatDuration(title) {
+    try {
+      const response = await fetch(`https://howlongtobeat.com/?q=${encodeURIComponent(title)}`, {
+        cache: "no-store"
+      });
+
+      if (!response.ok) {
+        return "Bulunamadi";
+      }
+
+      const html = await response.text();
+      const normalized = html.replace(/\s+/g, " ");
+      const durationMatch = normalized.match(/Main Story\s+([0-9]+(?:[.,][0-9]+)?(?:\s*[¼½¾])?\s*Hours?)/i);
+      if (!durationMatch?.[1]) {
+        return "Bulunamadi";
+      }
+
+      return durationMatch[1].trim();
+    } catch (error) {
+      return "Alinamadi";
+    }
+  }
+
+  async function syncAppInfo(state) {
     if (!isAppPage()) {
       return;
     }
 
     if (!state.masterEnabled) {
-      removeAppButtons();
+      removeAppInfo();
       return;
     }
 
@@ -498,39 +635,40 @@
       return;
     }
 
-    const existingActions = document.getElementById(APP_ACTIONS_ID);
-    if (existingActions) {
-      if (existingActions.parentElement !== titleEl) {
-        titleEl.appendChild(existingActions);
-      }
+    ensureAppActionsElement(titleEl, appId, title);
+    ensureAppInfoElement(titleEl);
+
+    const requestKey = `${appId}:${title.toLowerCase()}`;
+    if (appInfoCache.has(requestKey)) {
+      const cached = appInfoCache.get(requestKey);
+      setAppInfoValue("lowest-price", cached.lowestPrice);
+      setAppInfoValue("duration", cached.duration);
+      setAppInfoLoading(false);
       return;
     }
 
-    ensureAppButtonsStyle();
-
-    const actions = document.createElement("div");
-    actions.id = APP_ACTIONS_ID;
-
-    const steamCardUrl = `https://www.steamcardexchange.net/index.php?gamepage-appid-${appId}`;
-    const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${title} Gameplay`)}`;
-
-    actions.appendChild(createActionButton("Steam Card", steamCardUrl, "prixe-btn-steam-card"));
-    actions.appendChild(createActionButton("Gameplay", youtubeUrl, "prixe-btn-gameplay"));
-
-    titleEl.appendChild(actions);
-  }
-
-  function syncAppButtons(state) {
-    if (!isAppPage()) {
+    if (activeAppInfoRequestKey === requestKey) {
       return;
     }
 
-    if (!state.masterEnabled) {
-      removeAppButtons();
+    activeAppInfoRequestKey = requestKey;
+    setAppInfoLoading(true);
+    setAppInfoValue("lowest-price", "Yukleniyor...");
+    setAppInfoValue("duration", "Yukleniyor...");
+
+    const [lowestPrice, duration] = await Promise.all([
+      fetchLowestPriceBySteamAppId(appId),
+      fetchHowLongToBeatDuration(title)
+    ]);
+
+    if (activeAppInfoRequestKey !== requestKey) {
       return;
     }
 
-    mountAppButtons(state);
+    appInfoCache.set(requestKey, { lowestPrice, duration });
+    setAppInfoValue("lowest-price", lowestPrice);
+    setAppInfoValue("duration", duration);
+    setAppInfoLoading(false);
   }
 
   function debounce(fn, waitMs) {
@@ -554,7 +692,7 @@
     }
 
     if (isAppPage()) {
-      syncAppButtons(currentState);
+      syncAppInfo(currentState);
     }
   }
 
@@ -593,7 +731,7 @@
       currentState = normalizeState(message.payload);
       const stats = isSearchPage() ? applyAllFilters(currentState) : null;
       if (isAppPage()) {
-        syncAppButtons(currentState);
+        syncAppInfo(currentState);
       }
       sendResponse({ ok: true, stats });
       return true;

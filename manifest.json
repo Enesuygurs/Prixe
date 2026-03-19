@@ -8,7 +8,9 @@
     "storage"
   ],
   "host_permissions": [
-    "https://store.steampowered.com/*"
+    "https://store.steampowered.com/*",
+    "https://www.cheapshark.com/*",
+    "https://howlongtobeat.com/*"
   ],
   "action": {
     "default_popup": "src/popup.html",
