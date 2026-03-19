@@ -11,7 +11,7 @@
     <header class="header">
       <div class="brand-wrap">
         <div class="logo"><span class="logo-x">P</span><span class="logo-text">rixe</span></div>
-        <p id="labelAppSubtitle" class="app-subtitle">Steam Search filtrelerini tek noktadan yonet</p>
+        <p id="labelAppSubtitle" class="app-subtitle">Steam Arama filtrelerini tek noktadan yönet</p>
       </div>
       <div class="header-right">
         <label class="steam-switch" title="Prixe aktif/pasif">
@@ -27,7 +27,7 @@
 
     <main class="main-area">
       <section class="panel-card">
-        <h2 id="labelHomeFiltersSection" class="section-title">Search filters</h2>
+        <h2 id="labelHomeFiltersSection" class="section-title">Arama filtreleri</h2>
         <div class="field">
           <label id="labelMaxPrice" for="maxPrice">Max fiyat (USD)</label>
           <input id="maxPrice" type="number" min="0" step="1">
@@ -50,11 +50,11 @@
             </select>
           </div>
           <div class="field">
-            <label id="labelReviewFilter" for="reviewFilter">Inceleme filtresi</label>
+            <label id="labelReviewFilter" for="reviewFilter">İnceleme filtresi</label>
             <select id="reviewFilter">
-              <option id="reviewAny" value="any">Tum skorlar</option>
-              <option id="reviewPositivePlus" value="positive_plus">Pozitif ve uzeri</option>
-              <option id="reviewVeryPositivePlus" value="very_positive_plus">Cok pozitif ve uzeri</option>
+              <option id="reviewAny" value="any">Tüm skorlar</option>
+              <option id="reviewPositivePlus" value="positive_plus">Pozitif ve üzeri</option>
+              <option id="reviewVeryPositivePlus" value="very_positive_plus">Çok pozitif ve üzeri</option>
             </select>
           </div>
         </div>
@@ -70,12 +70,12 @@
             </select>
           </div>
           <div class="field">
-            <label id="labelSortBy" for="sortBy">Siralama</label>
+            <label id="labelSortBy" for="sortBy">Sıralama</label>
             <select id="sortBy">
-              <option id="sortDefault" value="default">Steam varsayilan</option>
+              <option id="sortDefault" value="default">Steam varsayılan</option>
               <option id="sortPriceAsc" value="price_asc">Fiyat artan</option>
               <option id="sortPriceDesc" value="price_desc">Fiyat azalan</option>
-              <option id="sortDiscountDesc" value="discount_desc">Indirim yuksekten</option>
+              <option id="sortDiscountDesc" value="discount_desc">İndirim yüksekten</option>
             </select>
           </div>
         </div>
@@ -91,9 +91,9 @@
             </select>
           </div>
           <div class="field">
-            <label id="labelMinReleaseYear" for="minReleaseYear">Min cikis yili</label>
+            <label id="labelMinReleaseYear" for="minReleaseYear">Min çıkış yılı</label>
             <select id="minReleaseYear">
-              <option id="allYearsOption" value="0">Tum yillar</option>
+              <option id="allYearsOption" value="0">Tüm yıllar</option>
               <option value="2026">2026+</option>
               <option value="2024">2024+</option>
               <option value="2020">2020+</option>
@@ -104,16 +104,16 @@
       </section>
 
       <section class="panel-card">
-        <h2 id="labelCheckboxFiltersSection" class="section-title">Checkbox filters</h2>
+        <h2 id="labelCheckboxFiltersSection" class="section-title">Onay kutusu filtreleri</h2>
         <div class="check-grid">
           <label id="labelSpecials" class="check-item"><input id="specials" type="checkbox"> Sadece indirimde</label>
-          <label id="labelHidef2p" class="check-item"><input id="hidef2p" type="checkbox"> Ucretsizleri gizle</label>
+          <label id="labelHidef2p" class="check-item"><input id="hidef2p" type="checkbox"> Ücretsizleri gizle</label>
           <label id="labelNdl" class="check-item"><input id="ndl" type="checkbox"> DLC gizle</label>
-          <label id="labelHideEarlyAccess" class="check-item"><input id="hideEarlyAccess" type="checkbox"> Early Access gizle</label>
-          <label id="labelOnlyTradingCards" class="check-item"><input id="onlyTradingCards" type="checkbox"> Steam koleksiyon kartlari</label>
-          <label id="labelOnlyAchievements" class="check-item"><input id="onlyAchievements" type="checkbox"> Steam basarimlari</label>
+          <label id="labelHideEarlyAccess" class="check-item"><input id="hideEarlyAccess" type="checkbox"> Erken erişimi gizle</label>
+          <label id="labelOnlyTradingCards" class="check-item"><input id="onlyTradingCards" type="checkbox"> Steam koleksiyon kartları</label>
+          <label id="labelOnlyAchievements" class="check-item"><input id="onlyAchievements" type="checkbox"> Steam başarımları</label>
           <label id="labelOnlyCloudSaves" class="check-item"><input id="onlyCloudSaves" type="checkbox"> Steam Cloud</label>
-          <label id="labelHideComingSoon" class="check-item"><input id="hideComingSoon" type="checkbox"> Coming Soon gizle</label>
+          <label id="labelHideComingSoon" class="check-item"><input id="hideComingSoon" type="checkbox"> Çok yakında etiketini gizle</label>
         </div>
         <div class="platform-row">
           <label class="check-item" id="labelPlatformWin"><input id="platformWin" type="checkbox"> Win</label>
@@ -123,10 +123,10 @@
       </section>
 
       <section class="panel-card">
-        <h2 id="labelFilterSettings" class="section-title">Filtre ayarlari</h2>
+        <h2 id="labelFilterSettings" class="section-title">Filtre ayarları</h2>
         <div class="two-col-grid">
           <div class="field">
-            <label id="labelLowPrice" for="lowPrice">Dusuk fiyat limiti ($)</label>
+            <label id="labelLowPrice" for="lowPrice">Düşük fiyat limiti ($)</label>
             <input id="lowPrice" type="number" min="0" step="1">
           </div>
           <div class="field">
@@ -135,15 +135,15 @@
           </div>
         </div>
         <div class="check-grid compact">
-          <label id="labelEnablePriceHighlight" class="check-item"><input id="enablePriceHighlight" type="checkbox"> Fiyat isaretleme aktif</label>
-          <label id="labelHideMixedOrWorse" class="check-item"><input id="hideMixedOrWorse" type="checkbox"> Mixed ve alti gizle</label>
+          <label id="labelEnablePriceHighlight" class="check-item"><input id="enablePriceHighlight" type="checkbox"> Fiyat işaretleme aktif</label>
+          <label id="labelHideMixedOrWorse" class="check-item"><input id="hideMixedOrWorse" type="checkbox"> Mixed ve altı gizle</label>
         </div>
       </section>
 
       <div class="action-row">
         <button id="applyBtn" class="btn-primary">Uygula</button>
-        <button id="openSearchBtn" class="btn-secondary">Steam Search Ac</button>
-        <button id="resetBtn" class="btn-ghost">Sifirla</button>
+        <button id="openSearchBtn" class="btn-secondary">Steam Aramayı Aç</button>
+        <button id="resetBtn" class="btn-ghost">Sıfırla</button>
       </div>
 
       <p id="status" class="status-line"></p>
