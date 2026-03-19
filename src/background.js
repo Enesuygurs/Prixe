@@ -176,7 +176,7 @@ async function fetchSteamSpyDuration(appId) {
       return { value: "Bulunamadı", sourceUrl: `https://steamspy.com/app/${appId}`, sourceName: "SteamSpy" };
     }
 
-    return { value: `${duration} (oyuncu ort.)`, sourceUrl: `https://steamspy.com/app/${appId}`, sourceName: "SteamSpy" };
+    return { value: duration, sourceUrl: `https://steamspy.com/app/${appId}`, sourceName: "SteamSpy" };
   } catch (error) {
     return { value: "Alınamadı", sourceUrl: `https://steamspy.com/app/${appId}`, sourceName: "SteamSpy" };
   }
