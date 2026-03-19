@@ -38,9 +38,9 @@
   let currentState = normalizeState(null);
   let currentLanguage = "tr";
   let skipMutationRefresh = false;
-  let activeAppInfoRequestKey = "";
+  let activeAppInfoRequestAppId = "";
   const appInfoCache = new Map();
-  const appInfoRequestedKeys = new Set();
+  const appInfoRequestedAppIds = new Set();
 
   const APP_TEXTS = {
     tr: {
@@ -709,8 +709,15 @@
     }
 
     const safeUrl = typeof url === "string" && url.trim() ? url : "#";
-    link.href = safeUrl;
-    link.title = sourceName ? `${getAppText("sourcePrefix")}: ${sourceName}` : getAppText("sourcePrefix");
+    const safeTitle = sourceName ? `${getAppText("sourcePrefix")}: ${sourceName}` : getAppText("sourcePrefix");
+
+    if (link.getAttribute("href") !== safeUrl) {
+      link.href = safeUrl;
+    }
+
+    if (link.getAttribute("title") !== safeTitle) {
+      link.title = safeTitle;
+    }
   }
 
   function setAppInfoValue(field, value) {
@@ -722,7 +729,10 @@
     const target = info.querySelector(`[data-field="${field}"]`);
     if (target) {
       const safeText = typeof value === "string" && value.trim() ? value : getAppText("notFound");
-      target.textContent = localizeInfoValue(safeText);
+      const localizedText = localizeInfoValue(safeText);
+      if (target.textContent !== localizedText) {
+        target.textContent = localizedText;
+      }
     }
   }
 
@@ -795,9 +805,8 @@
     ensureAppActionsElement(titleEl, appId, title);
     ensureAppInfoElement(titleEl);
 
-    const requestKey = `${appId}:${title.toLowerCase()}`;
-    if (appInfoCache.has(requestKey)) {
-      const cached = appInfoCache.get(requestKey);
+    if (appInfoCache.has(appId)) {
+      const cached = appInfoCache.get(appId);
       setAppInfoValue("lowest-price", cached.lowestPrice);
       setAppInfoValue("duration", cached.duration);
       setAppInfoSourceLink("lowest-price", cached.lowestPriceSourceUrl, cached.lowestPriceSourceName);
@@ -806,38 +815,42 @@
       return;
     }
 
-    if (appInfoRequestedKeys.has(requestKey) || activeAppInfoRequestKey === requestKey) {
+    if (appInfoRequestedAppIds.has(appId) || activeAppInfoRequestAppId === appId) {
       return;
     }
 
-    appInfoRequestedKeys.add(requestKey);
-    activeAppInfoRequestKey = requestKey;
+    appInfoRequestedAppIds.add(appId);
+    activeAppInfoRequestAppId = appId;
     setAppInfoLoading(true);
     setAppInfoValue("lowest-price", getAppText("loading"));
     setAppInfoValue("duration", getAppText("loading"));
 
-    const result = await requestAppInfoFromBackground(appId, title);
-    const lowestPrice = result.lowestPrice;
-    const duration = result.duration;
+    try {
+      const result = await requestAppInfoFromBackground(appId, title);
+      if (activeAppInfoRequestAppId !== appId) {
+        return;
+      }
 
-    if (activeAppInfoRequestKey !== requestKey) {
-      return;
+      const payload = {
+        lowestPrice: result.lowestPrice,
+        duration: result.duration,
+        lowestPriceSourceUrl: result.lowestPriceSourceUrl,
+        lowestPriceSourceName: result.lowestPriceSourceName,
+        durationSourceUrl: result.durationSourceUrl,
+        durationSourceName: result.durationSourceName
+      };
+
+      appInfoCache.set(appId, payload);
+      setAppInfoValue("lowest-price", payload.lowestPrice);
+      setAppInfoValue("duration", payload.duration);
+      setAppInfoSourceLink("lowest-price", payload.lowestPriceSourceUrl, payload.lowestPriceSourceName);
+      setAppInfoSourceLink("duration", payload.durationSourceUrl, payload.durationSourceName);
+      setAppInfoLoading(false);
+    } finally {
+      if (activeAppInfoRequestAppId === appId) {
+        activeAppInfoRequestAppId = "";
+      }
     }
-
-    appInfoCache.set(requestKey, {
-      lowestPrice,
-      duration,
-      lowestPriceSourceUrl: result.lowestPriceSourceUrl,
-      lowestPriceSourceName: result.lowestPriceSourceName,
-      durationSourceUrl: result.durationSourceUrl,
-      durationSourceName: result.durationSourceName
-    });
-    setAppInfoValue("lowest-price", lowestPrice);
-    setAppInfoValue("duration", duration);
-    setAppInfoSourceLink("lowest-price", result.lowestPriceSourceUrl, result.lowestPriceSourceName);
-    setAppInfoSourceLink("duration", result.durationSourceUrl, result.durationSourceName);
-    setAppInfoLoading(false);
-    activeAppInfoRequestKey = "";
   }
 
   function debounce(fn, waitMs) {
@@ -874,6 +887,19 @@
       if (skipMutationRefresh) {
         return;
       }
+
+      if (isAppPage()) {
+        const appId = getAppIdFromUrl();
+        const hasInfo = !!document.getElementById(APP_INFO_ID);
+        const hasActions = !!document.getElementById(APP_ACTIONS_ID);
+        const alreadyResolved = appInfoRequestedAppIds.has(appId) || appInfoCache.has(appId);
+
+        // App page data is intended to be fetched once. Avoid repeated DOM churn.
+        if (alreadyResolved && hasInfo && hasActions) {
+          return;
+        }
+      }
+
       debouncedRefresh();
     });
 
