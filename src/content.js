@@ -567,7 +567,8 @@
 
     const target = info.querySelector(`[data-field="${field}"]`);
     if (target) {
-      target.textContent = value;
+      const safeText = typeof value === "string" && value.trim() ? value : "Bulunamadi";
+      target.textContent = safeText;
     }
   }
 
@@ -580,56 +581,29 @@
     info.classList.toggle("is-loading", isLoading);
   }
 
-  async function fetchLowestPriceBySteamAppId(appId) {
+  async function requestAppInfoFromBackground(appId, title) {
     try {
-      const response = await fetch(`https://www.cheapshark.com/api/1.0/games?steamAppID=${encodeURIComponent(appId)}`, {
-        cache: "no-store"
+      const response = await chrome.runtime.sendMessage({
+        action: "fetchPrixeAppInfo",
+        payload: { appId, title }
       });
 
-      if (!response.ok) {
-        return "Bulunamadi";
+      if (!response?.ok || !response.data) {
+        return {
+          lowestPrice: "Alinamadi",
+          duration: "Alinamadi"
+        };
       }
 
-      const data = await response.json();
-      if (!Array.isArray(data) || data.length === 0) {
-        return "Bulunamadi";
-      }
-
-      const prices = data
-        .map((item) => Number(item?.cheapest))
-        .filter((price) => Number.isFinite(price) && price > 0);
-
-      if (prices.length === 0) {
-        return "Bulunamadi";
-      }
-
-      const minPrice = Math.min(...prices);
-      return `$${minPrice.toFixed(2)}`;
+      return {
+        lowestPrice: response.data.lowestPrice,
+        duration: response.data.duration
+      };
     } catch (error) {
-      return "Alinamadi";
-    }
-  }
-
-  async function fetchHowLongToBeatDuration(title) {
-    try {
-      const response = await fetch(`https://howlongtobeat.com/?q=${encodeURIComponent(title)}`, {
-        cache: "no-store"
-      });
-
-      if (!response.ok) {
-        return "Bulunamadi";
-      }
-
-      const html = await response.text();
-      const normalized = html.replace(/\s+/g, " ");
-      const durationMatch = normalized.match(/Main Story\s+([0-9]+(?:[.,][0-9]+)?(?:\s*[¼½¾])?\s*Hours?)/i);
-      if (!durationMatch?.[1]) {
-        return "Bulunamadi";
-      }
-
-      return durationMatch[1].trim();
-    } catch (error) {
-      return "Alinamadi";
+      return {
+        lowestPrice: "Alinamadi",
+        duration: "Alinamadi"
+      };
     }
   }
 
@@ -673,10 +647,9 @@
     setAppInfoValue("lowest-price", "Yukleniyor...");
     setAppInfoValue("duration", "Yukleniyor...");
 
-    const [lowestPrice, duration] = await Promise.all([
-      fetchLowestPriceBySteamAppId(appId),
-      fetchHowLongToBeatDuration(title)
-    ]);
+    const result = await requestAppInfoFromBackground(appId, title);
+    const lowestPrice = result.lowestPrice;
+    const duration = result.duration;
 
     if (activeAppInfoRequestKey !== requestKey) {
       return;

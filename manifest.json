@@ -10,7 +10,8 @@
   "host_permissions": [
     "https://store.steampowered.com/*",
     "https://www.cheapshark.com/*",
-    "https://howlongtobeat.com/*"
+    "https://howlongtobeat.com/*",
+    "https://steamspy.com/*"
   ],
   "action": {
     "default_popup": "src/popup.html",
@@ -24,6 +25,9 @@
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
+  },
+  "background": {
+    "service_worker": "src/background.js"
   },
   "content_scripts": [
     {
