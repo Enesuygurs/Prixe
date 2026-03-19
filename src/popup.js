@@ -416,6 +416,14 @@ function formatStats(stats) {
   return ` ${t("visibleText")}: ${stats.visible}/${stats.total}`;
 }
 
+function isSteamManagedTabUrl(url) {
+  if (!url || !url.startsWith("https://store.steampowered.com/")) {
+    return false;
+  }
+
+  return url.startsWith("https://store.steampowered.com/search") || url.startsWith("https://store.steampowered.com/app/");
+}
+
 function validatePriceThresholds(state) {
   if (state.midPrice < state.lowPrice) {
     return t("errMidLessThanLow");
@@ -436,7 +444,7 @@ async function applyFiltersToSteam() {
 
   if (!state.masterEnabled) {
     const tab = await getActiveTab();
-    if (tab?.id && tab.url && tab.url.startsWith("https://store.steampowered.com/search")) {
+    if (tab?.id && isSteamManagedTabUrl(tab.url)) {
       await notifyContentScript(tab.id, state);
     }
     setStatus(t("statusDisabled"));
@@ -474,7 +482,7 @@ async function saveSettingsOnly() {
 
   const tab = await getActiveTab();
   let runtimeStats = null;
-  if (tab?.id && tab.url && tab.url.startsWith("https://store.steampowered.com/search")) {
+  if (tab?.id && isSteamManagedTabUrl(tab.url)) {
     runtimeStats = await notifyContentScript(tab.id, state);
   }
   if (!state.masterEnabled) {

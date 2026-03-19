@@ -28,11 +28,45 @@
   const STORAGE_KEY = "steamSearchState";
 
   const STYLE_ID = "steam-search-helper-style";
+  const APP_BUTTON_STYLE_ID = "prixe-app-buttons-style";
+  const APP_ACTIONS_ID = "prixe-app-actions";
   const ROW_SELECTOR = "a.search_result_row";
   const ROW_CONTAINER_SELECTOR = "#search_resultsRows";
 
   let currentState = normalizeState(null);
   let skipMutationRefresh = false;
+
+  function isSearchPage() {
+    return window.location.pathname.startsWith("/search");
+  }
+
+  function isAppPage() {
+    return window.location.pathname.startsWith("/app/");
+  }
+
+  function ensureAppButtonsStyle() {
+    if (document.getElementById(APP_BUTTON_STYLE_ID)) {
+      return;
+    }
+
+    const style = document.createElement("style");
+    style.id = APP_BUTTON_STYLE_ID;
+    style.textContent = `
+      #${APP_ACTIONS_ID} {
+        float: right;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 2px;
+      }
+
+      #${APP_ACTIONS_ID} .btnv6_blue_hoverfade.btn_medium span {
+        text-transform: none;
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
 
   function ensureStyle() {
     if (document.getElementById(STYLE_ID)) {
@@ -376,6 +410,86 @@
     };
   }
 
+  function getAppIdFromUrl() {
+    const match = window.location.pathname.match(/\/app\/(\d+)/);
+    return match?.[1] || "";
+  }
+
+  function getAppTitle() {
+    const titleEl = document.getElementById("appHubAppName");
+    return (titleEl?.textContent || "").trim();
+  }
+
+  function removeAppButtons() {
+    const existing = document.getElementById(APP_ACTIONS_ID);
+    if (existing) {
+      existing.remove();
+    }
+  }
+
+  function createActionButton(text, href) {
+    const button = document.createElement("a");
+    button.className = "btnv6_blue_hoverfade btn_medium";
+    button.href = href;
+    button.target = "_blank";
+    button.rel = "noopener noreferrer";
+
+    const span = document.createElement("span");
+    span.textContent = text;
+    button.appendChild(span);
+
+    return button;
+  }
+
+  function mountAppButtons(state) {
+    if (!isAppPage()) {
+      return;
+    }
+
+    if (!state.masterEnabled) {
+      removeAppButtons();
+      return;
+    }
+
+    const appId = getAppIdFromUrl();
+    const title = getAppTitle();
+    const titleEl = document.getElementById("appHubAppName");
+    if (!appId || !title || !titleEl || document.getElementById(APP_ACTIONS_ID)) {
+      return;
+    }
+
+    const headerTop = titleEl.closest(".apphub_HeaderStandardTop");
+    if (!headerTop) {
+      return;
+    }
+
+    ensureAppButtonsStyle();
+
+    const actions = document.createElement("div");
+    actions.id = APP_ACTIONS_ID;
+
+    const steamCardUrl = `https://www.steamcardexchange.net/index.php?gamepage-appid-${appId}`;
+    const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${title} Gameplay`)}`;
+
+    actions.appendChild(createActionButton("Steam Card", steamCardUrl));
+    actions.appendChild(createActionButton("Gameplay", youtubeUrl));
+
+    titleEl.insertAdjacentElement("afterend", actions);
+  }
+
+  function syncAppButtons(state) {
+    if (!isAppPage()) {
+      return;
+    }
+
+    if (!state.masterEnabled) {
+      removeAppButtons();
+      return;
+    }
+
+    mountAppButtons(state);
+  }
+
   function debounce(fn, waitMs) {
     let timerId = null;
     return (...args) => {
@@ -392,7 +506,13 @@
   }
 
   function refreshFromCurrentState() {
-    applyAllFilters(currentState);
+    if (isSearchPage()) {
+      applyAllFilters(currentState);
+    }
+
+    if (isAppPage()) {
+      syncAppButtons(currentState);
+    }
   }
 
   function setupMutationObserver() {
@@ -418,7 +538,7 @@
 
       if (changes[STORAGE_KEY]) {
         currentState = normalizeState(changes[STORAGE_KEY].newValue);
-        applyAllFilters(currentState);
+        refreshFromCurrentState();
       }
     });
 
@@ -428,7 +548,10 @@
       }
 
       currentState = normalizeState(message.payload);
-      const stats = applyAllFilters(currentState);
+      const stats = isSearchPage() ? applyAllFilters(currentState) : null;
+      if (isAppPage()) {
+        syncAppButtons(currentState);
+      }
       sendResponse({ ok: true, stats });
       return true;
     });
@@ -436,7 +559,7 @@
 
   async function bootstrap() {
     currentState = await loadStateFromStorage();
-    applyAllFilters(currentState);
+    refreshFromCurrentState();
     setupMutationObserver();
     setupListeners();
   }
