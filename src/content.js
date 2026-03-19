@@ -123,6 +123,27 @@
         font-size: 14px;
       }
 
+      .prixe-info-line.prixe-info-line-price {
+        display: flex;
+        align-items: stretch;
+        gap: 8px;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      .prixe-info-line.prixe-info-line-price .prixe-info-label-wrap {
+        display: flex;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.65);
+        padding: 12px;
+      }
+
+      .prixe-info-line.prixe-info-line-price .prixe-info-value-wrap {
+        display: flex;
+        align-items: center;
+        padding: 12px 12px 12px 0;
+      }
+
     `;
 
     document.head.appendChild(style);
@@ -569,7 +590,10 @@
     info.innerHTML = `
       <div class="event_context">PRIXE INFO</div>
       <div class="saleEventBannerStyle saleEventBannerBig prixe-info-block">
-        <div class="prixe-info-line"><a class="prixe-info-source-link" data-source-link="lowest-price" href="https://www.cheapshark.com" target="_blank" rel="noopener noreferrer">En dusuk fiyat:</a> <span class="prixe-info-value" data-field="lowest-price">Yukleniyor...</span></div>
+        <div class="prixe-info-line prixe-info-line-price">
+          <div class="prixe-info-label-wrap"><a class="prixe-info-source-link" data-source-link="lowest-price" href="https://www.cheapshark.com" target="_blank" rel="noopener noreferrer">En dusuk fiyat:</a></div>
+          <div class="prixe-info-value-wrap"><span class="prixe-info-value" data-field="lowest-price">Yukleniyor...</span></div>
+        </div>
         <div class="prixe-info-line"><a class="prixe-info-source-link" data-source-link="duration" href="https://howlongtobeat.com" target="_blank" rel="noopener noreferrer">Oyun suresi:</a> <span class="prixe-info-value" data-field="duration">Yukleniyor...</span></div>
       </div>
     `;
