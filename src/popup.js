@@ -282,11 +282,24 @@ function validatePriceThresholds(state) {
 }
 
 function buildSteamSearchUrl(state, existingUrl) {
-  const url = new URL(existingUrl || "https://store.steampowered.com/search/");
-  if (!url.pathname.startsWith("/search")) {
-    url.pathname = "/search/";
-    url.search = "";
+  const url = new URL("https://store.steampowered.com/search/");
+
+  // Preserve only search term from current URL; drop all other sticky params.
+  if (existingUrl) {
+    try {
+      const currentUrl = new URL(existingUrl);
+      const term = currentUrl.searchParams.get("term");
+      if (term) {
+        url.searchParams.set("term", term);
+      }
+    } catch {
+      // Ignore malformed URL and continue with clean base URL.
+    }
   }
+
+  // Remove locale params so we always generate a clean URL.
+  url.searchParams.delete("l");
+  url.searchParams.delete("supportedlang");
 
   if (!state.masterEnabled) {
     url.search = "";
@@ -311,6 +324,8 @@ function buildSteamSearchUrl(state, existingUrl) {
 
   setBool("specials", state.specials);
   setBool("hidef2p", state.hidef2p);
+  // Keep Steam's ndl flag to match expected search behavior in your account.
+  url.searchParams.set("ndl", "1");
 
   const updateCategoryFeature = (featureId, enabled) => {
     const raw = url.searchParams.get("category2");
