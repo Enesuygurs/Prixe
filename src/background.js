@@ -16,7 +16,21 @@ function parseHowLongToBeatDuration(html) {
 }
 
 function getCacheKey(appId) {
-  return `prixeAppInfo:${appId}`;
+  return `prixeAppInfo:v2:${appId}`;
+}
+
+function parseDollarValue(text) {
+  if (typeof text !== "string") {
+    return null;
+  }
+
+  const match = text.match(/(\d+(?:[.,]\d+)?)/);
+  if (!match?.[1]) {
+    return null;
+  }
+
+  const value = Number(match[1].replace(",", "."));
+  return Number.isFinite(value) ? value : null;
 }
 
 async function getCachedAppInfo(appId) {
@@ -79,7 +93,11 @@ async function fetchLowestPriceByTitle(title) {
       return { value: "Bulunamadi", sourceUrl: "https://www.cheapshark.com", sourceName: "CheapShark" };
     }
 
-    const minItem = data
+    const normalizedTitle = title.trim().toLowerCase();
+    const strictlyMatched = data.filter((item) => String(item?.external || "").trim().toLowerCase() === normalizedTitle);
+    const candidateList = strictlyMatched.length > 0 ? strictlyMatched : data;
+
+    const minItem = candidateList
       .filter((item) => Number.isFinite(Number(item?.cheapest)) && Number(item?.cheapest) > 0)
       .sort((a, b) => Number(a.cheapest) - Number(b.cheapest))[0];
 
@@ -95,6 +113,34 @@ async function fetchLowestPriceByTitle(title) {
     return { value: `$${minPrice.toFixed(2)}`, sourceUrl, sourceName: "CheapShark" };
   } catch (error) {
     return { value: "Alinamadi", sourceUrl: "https://www.cheapshark.com", sourceName: "CheapShark" };
+  }
+}
+
+async function fetchSteamCurrentPrice(appId) {
+  try {
+    const response = await fetch(`https://store.steampowered.com/api/appdetails?appids=${encodeURIComponent(appId)}&cc=us&l=en`, {
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      return { value: "Bulunamadi", sourceUrl: `https://store.steampowered.com/app/${appId}`, sourceName: "Steam" };
+    }
+
+    const data = await response.json();
+    const appData = data?.[String(appId)]?.data;
+    const cents = Number(appData?.price_overview?.final);
+    if (!Number.isFinite(cents) || cents <= 0) {
+      return { value: "Bulunamadi", sourceUrl: `https://store.steampowered.com/app/${appId}`, sourceName: "Steam" };
+    }
+
+    const dollars = cents / 100;
+    return {
+      value: `$${dollars.toFixed(2)}`,
+      sourceUrl: `https://store.steampowered.com/app/${appId}`,
+      sourceName: "Steam"
+    };
+  } catch (error) {
+    return { value: "Alinamadi", sourceUrl: `https://store.steampowered.com/app/${appId}`, sourceName: "Steam" };
   }
 }
 
@@ -170,16 +216,39 @@ async function fetchBestDuration(appId, title) {
 
 async function fetchBestLowestPrice(appId, title) {
   const byAppId = await fetchLowestPriceBySteamAppId(appId);
+  const steamCurrent = await fetchSteamCurrentPrice(appId);
+  const byTitle = await fetchLowestPriceByTitle(title);
+
+  const candidates = [byAppId, steamCurrent, byTitle]
+    .map((item) => ({
+      ...item,
+      numeric: parseDollarValue(item?.value)
+    }))
+    .filter((item) => Number.isFinite(item.numeric) && item.numeric > 0);
+
+  if (candidates.length > 0) {
+    candidates.sort((a, b) => a.numeric - b.numeric);
+    const best = candidates[0];
+    return {
+      value: `$${best.numeric.toFixed(2)}`,
+      sourceUrl: best.sourceUrl,
+      sourceName: best.sourceName
+    };
+  }
+
+  if (steamCurrent.value !== "Bulunamadi" && steamCurrent.value !== "Alinamadi") {
+    return steamCurrent;
+  }
+
   if (byAppId.value !== "Bulunamadi" && byAppId.value !== "Alinamadi") {
     return byAppId;
   }
 
-  const byTitle = await fetchLowestPriceByTitle(title);
   if (byTitle.value !== "Bulunamadi" && byTitle.value !== "Alinamadi") {
     return byTitle;
   }
 
-  return byAppId;
+  return steamCurrent;
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
