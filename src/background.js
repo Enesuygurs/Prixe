@@ -12,7 +12,7 @@ function parseHowLongToBeatDuration(html) {
     }
   }
 
-  return "Bulunamadi";
+  return "Bulunamadı";
 }
 
 function getCacheKey(appId) {
@@ -51,12 +51,12 @@ async function fetchLowestPriceBySteamAppId(appId) {
     });
 
     if (!response.ok) {
-      return { value: "Bulunamadi", sourceUrl: "https://www.cheapshark.com", sourceName: "CheapShark" };
+      return { value: "Bulunamadı", sourceUrl: "https://www.cheapshark.com", sourceName: "CheapShark" };
     }
 
     const data = await response.json();
     if (!Array.isArray(data) || data.length === 0) {
-      return { value: "Bulunamadi", sourceUrl: "https://www.cheapshark.com", sourceName: "CheapShark" };
+      return { value: "Bulunamadı", sourceUrl: "https://www.cheapshark.com", sourceName: "CheapShark" };
     }
 
     const minItem = data
@@ -64,7 +64,7 @@ async function fetchLowestPriceBySteamAppId(appId) {
       .sort((a, b) => Number(a.cheapest) - Number(b.cheapest))[0];
 
     if (!minItem) {
-      return { value: "Bulunamadi", sourceUrl: "https://www.cheapshark.com", sourceName: "CheapShark" };
+      return { value: "Bulunamadı", sourceUrl: "https://www.cheapshark.com", sourceName: "CheapShark" };
     }
 
     const minPrice = Number(minItem.cheapest);
@@ -74,7 +74,7 @@ async function fetchLowestPriceBySteamAppId(appId) {
 
     return { value: `$${minPrice.toFixed(2)}`, sourceUrl, sourceName: "CheapShark" };
   } catch (error) {
-    return { value: "Alinamadi", sourceUrl: "https://www.cheapshark.com", sourceName: "CheapShark" };
+    return { value: "Alınamadı", sourceUrl: "https://www.cheapshark.com", sourceName: "CheapShark" };
   }
 }
 
@@ -85,12 +85,12 @@ async function fetchLowestPriceByTitle(title) {
     });
 
     if (!response.ok) {
-      return { value: "Bulunamadi", sourceUrl: "https://www.cheapshark.com", sourceName: "CheapShark" };
+      return { value: "Bulunamadı", sourceUrl: "https://www.cheapshark.com", sourceName: "CheapShark" };
     }
 
     const data = await response.json();
     if (!Array.isArray(data) || data.length === 0) {
-      return { value: "Bulunamadi", sourceUrl: "https://www.cheapshark.com", sourceName: "CheapShark" };
+      return { value: "Bulunamadı", sourceUrl: "https://www.cheapshark.com", sourceName: "CheapShark" };
     }
 
     const normalizedTitle = title.trim().toLowerCase();
@@ -102,7 +102,7 @@ async function fetchLowestPriceByTitle(title) {
       .sort((a, b) => Number(a.cheapest) - Number(b.cheapest))[0];
 
     if (!minItem) {
-      return { value: "Bulunamadi", sourceUrl: "https://www.cheapshark.com", sourceName: "CheapShark" };
+      return { value: "Bulunamadı", sourceUrl: "https://www.cheapshark.com", sourceName: "CheapShark" };
     }
 
     const minPrice = Number(minItem.cheapest);
@@ -112,7 +112,7 @@ async function fetchLowestPriceByTitle(title) {
 
     return { value: `$${minPrice.toFixed(2)}`, sourceUrl, sourceName: "CheapShark" };
   } catch (error) {
-    return { value: "Alinamadi", sourceUrl: "https://www.cheapshark.com", sourceName: "CheapShark" };
+    return { value: "Alınamadı", sourceUrl: "https://www.cheapshark.com", sourceName: "CheapShark" };
   }
 }
 
@@ -123,14 +123,14 @@ async function fetchSteamCurrentPrice(appId) {
     });
 
     if (!response.ok) {
-      return { value: "Bulunamadi", sourceUrl: `https://store.steampowered.com/app/${appId}`, sourceName: "Steam" };
+      return { value: "Bulunamadı", sourceUrl: `https://store.steampowered.com/app/${appId}`, sourceName: "Steam" };
     }
 
     const data = await response.json();
     const appData = data?.[String(appId)]?.data;
     const cents = Number(appData?.price_overview?.final);
     if (!Number.isFinite(cents) || cents <= 0) {
-      return { value: "Bulunamadi", sourceUrl: `https://store.steampowered.com/app/${appId}`, sourceName: "Steam" };
+      return { value: "Bulunamadı", sourceUrl: `https://store.steampowered.com/app/${appId}`, sourceName: "Steam" };
     }
 
     const dollars = cents / 100;
@@ -140,14 +140,14 @@ async function fetchSteamCurrentPrice(appId) {
       sourceName: "Steam"
     };
   } catch (error) {
-    return { value: "Alinamadi", sourceUrl: `https://store.steampowered.com/app/${appId}`, sourceName: "Steam" };
+    return { value: "Alınamadı", sourceUrl: `https://store.steampowered.com/app/${appId}`, sourceName: "Steam" };
   }
 }
 
 function formatMinutesAsHours(minutes) {
   const hours = minutes / 60;
   if (!Number.isFinite(hours) || hours <= 0) {
-    return "Bulunamadi";
+    return "Bulunamadı";
   }
 
   if (hours < 1) {
@@ -164,7 +164,7 @@ async function fetchSteamSpyDuration(appId) {
     });
 
     if (!response.ok) {
-      return { value: "Bulunamadi", sourceUrl: `https://steamspy.com/app/${appId}`, sourceName: "SteamSpy" };
+      return { value: "Bulunamadı", sourceUrl: `https://steamspy.com/app/${appId}`, sourceName: "SteamSpy" };
     }
 
     const data = await response.json();
@@ -172,13 +172,13 @@ async function fetchSteamSpyDuration(appId) {
     const medianMinutes = Number(data?.median_forever);
 
     const duration = formatMinutesAsHours(averageMinutes > 0 ? averageMinutes : medianMinutes);
-    if (duration === "Bulunamadi") {
-      return { value: "Bulunamadi", sourceUrl: `https://steamspy.com/app/${appId}`, sourceName: "SteamSpy" };
+    if (duration === "Bulunamadı") {
+      return { value: "Bulunamadı", sourceUrl: `https://steamspy.com/app/${appId}`, sourceName: "SteamSpy" };
     }
 
     return { value: `${duration} (oyuncu ort.)`, sourceUrl: `https://steamspy.com/app/${appId}`, sourceName: "SteamSpy" };
   } catch (error) {
-    return { value: "Alinamadi", sourceUrl: `https://steamspy.com/app/${appId}`, sourceName: "SteamSpy" };
+    return { value: "Alınamadı", sourceUrl: `https://steamspy.com/app/${appId}`, sourceName: "SteamSpy" };
   }
 }
 
@@ -189,25 +189,25 @@ async function fetchHowLongToBeatDuration(title) {
     });
 
     if (!response.ok) {
-      return { value: "Bulunamadi", sourceUrl: `https://howlongtobeat.com/?q=${encodeURIComponent(title)}`, sourceName: "HowLongToBeat" };
+      return { value: "Bulunamadı", sourceUrl: `https://howlongtobeat.com/?q=${encodeURIComponent(title)}`, sourceName: "HowLongToBeat" };
     }
 
     const html = await response.text();
     const value = parseHowLongToBeatDuration(html);
     return { value, sourceUrl: `https://howlongtobeat.com/?q=${encodeURIComponent(title)}`, sourceName: "HowLongToBeat" };
   } catch (error) {
-    return { value: "Alinamadi", sourceUrl: `https://howlongtobeat.com/?q=${encodeURIComponent(title)}`, sourceName: "HowLongToBeat" };
+     return { value: "Alınamadı", sourceUrl: `https://howlongtobeat.com/?q=${encodeURIComponent(title)}`, sourceName: "HowLongToBeat" };
   }
 }
 
 async function fetchBestDuration(appId, title) {
   const hltb = await fetchHowLongToBeatDuration(title);
-  if (hltb.value !== "Bulunamadi" && hltb.value !== "Alinamadi") {
-    return hltb;
+    if (hltb.value !== "Bulunamadı" && hltb.value !== "Alınamadı") {
+     return hltb;
   }
 
   const steamSpyDuration = await fetchSteamSpyDuration(appId);
-  if (steamSpyDuration.value !== "Bulunamadi" && steamSpyDuration.value !== "Alinamadi") {
+  if (steamSpyDuration.value !== "Bulunamadı" && steamSpyDuration.value !== "Alınamadı") {
     return steamSpyDuration;
   }
 
@@ -236,16 +236,16 @@ async function fetchBestLowestPrice(appId, title) {
     };
   }
 
-  if (steamCurrent.value !== "Bulunamadi" && steamCurrent.value !== "Alinamadi") {
+  if (steamCurrent.value !== "Bulunamadı" && steamCurrent.value !== "Alınamadı") {
     return steamCurrent;
   }
 
-  if (byAppId.value !== "Bulunamadi" && byAppId.value !== "Alinamadi") {
-    return byAppId;
+    if (byAppId.value !== "Bulunamadı" && byAppId.value !== "Alınamadı") {
+     return byAppId;
   }
 
-  if (byTitle.value !== "Bulunamadi" && byTitle.value !== "Alinamadi") {
-    return byTitle;
+    if (byTitle.value !== "Bulunamadı" && byTitle.value !== "Alınamadı") {
+     return byTitle;
   }
 
   return steamCurrent;

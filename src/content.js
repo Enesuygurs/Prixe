@@ -594,12 +594,12 @@
       <div class="event_context">PRIXE INFO</div>
       <div class="saleEventBannerStyle saleEventBannerBig prixe-info-block">
         <div class="prixe-info-line prixe-info-line-price">
-          <div class="prixe-info-label-wrap"><a class="prixe-info-source-link" data-source-link="lowest-price" href="https://www.cheapshark.com" target="_blank" rel="noopener noreferrer">En dusuk fiyat</a></div>
-          <div class="prixe-info-value-wrap"><span class="prixe-info-value" data-field="lowest-price">Yukleniyor...</span></div>
+          <div class="prixe-info-label-wrap"><a class="prixe-info-source-link" data-source-link="lowest-price" href="https://www.cheapshark.com" target="_blank" rel="noopener noreferrer">En düşük fiyat</a></div>
+          <div class="prixe-info-value-wrap"><span class="prixe-info-value" data-field="lowest-price">Yükleniyor...</span></div>
         </div>
         <div class="prixe-info-line prixe-info-line-duration">
-          <div class="prixe-info-label-wrap"><a class="prixe-info-source-link" data-source-link="duration" href="https://howlongtobeat.com" target="_blank" rel="noopener noreferrer">Oyun suresi</a></div>
-          <div class="prixe-info-value-wrap"><span class="prixe-info-value" data-field="duration">Yukleniyor...</span></div>
+          <div class="prixe-info-label-wrap"><a class="prixe-info-source-link" data-source-link="duration" href="https://howlongtobeat.com" target="_blank" rel="noopener noreferrer">Oyun süresi</a></div>
+          <div class="prixe-info-value-wrap"><span class="prixe-info-value" data-field="duration">Yükleniyor...</span></div>
         </div>
       </div>
     `;
@@ -631,7 +631,7 @@
 
     const target = info.querySelector(`[data-field="${field}"]`);
     if (target) {
-      const safeText = typeof value === "string" && value.trim() ? value : "Bulunamadi";
+      const safeText = typeof value === "string" && value.trim() ? value : "Bulunamadı";
       target.textContent = safeText;
     }
   }
@@ -654,8 +654,8 @@
 
       if (!response?.ok || !response.data) {
         return {
-          lowestPrice: "Alinamadi",
-          duration: "Alinamadi",
+          lowestPrice: "Alınamadı",
+          duration: "Alınamadı",
           lowestPriceSourceUrl: "https://www.cheapshark.com",
           lowestPriceSourceName: "CheapShark",
           durationSourceUrl: "https://howlongtobeat.com",
@@ -673,8 +673,8 @@
       };
     } catch (error) {
       return {
-        lowestPrice: "Alinamadi",
-        duration: "Alinamadi",
+        lowestPrice: "Alınamadı",
+        duration: "Alınamadı",
         lowestPriceSourceUrl: "https://www.cheapshark.com",
         lowestPriceSourceName: "CheapShark",
         durationSourceUrl: "https://howlongtobeat.com",
@@ -723,8 +723,8 @@
     appInfoRequestedKeys.add(requestKey);
     activeAppInfoRequestKey = requestKey;
     setAppInfoLoading(true);
-    setAppInfoValue("lowest-price", "Yukleniyor...");
-    setAppInfoValue("duration", "Yukleniyor...");
+    setAppInfoValue("lowest-price", "Yükleniyor...");
+    setAppInfoValue("duration", "Yükleniyor...");
 
     const result = await requestAppInfoFromBackground(appId, title);
     const lowestPrice = result.lowestPrice;
