@@ -48,6 +48,13 @@ body.popup-mode {
   border-bottom: 1px solid #2a2a35;
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
 .logo {
   font-size: 20px;
   font-weight: 700;
@@ -66,6 +73,35 @@ body.popup-mode {
 .header-actions {
   display: flex;
   gap: 6px;
+}
+
+.header-toggle-row {
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.header-toggle-row .steam-toggle-label {
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.header-toggle-row .steam-switch {
+  width: 46px;
+  height: 26px;
+}
+
+.header-toggle-row .steam-slider::before {
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  top: 3px;
+}
+
+.header-toggle-row .steam-switch input:checked + .steam-slider::before {
+  transform: translateX(20px);
 }
 
 .icon-btn {
@@ -124,12 +160,81 @@ body.popup-mode {
   display: block;
 }
 
-.steam-layout > div:not(.steam-section-divider) {
+.steam-layout > div:not(.steam-section-divider):not(.steam-toggle-row) {
   margin-bottom: 12px;
 }
 
 .steam-layout > div:last-child {
   margin-bottom: 0;
+}
+
+.steam-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.steam-toggle-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #e4e4e7;
+  letter-spacing: 0.2px;
+}
+
+.steam-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 54px;
+  height: 30px;
+  flex: 0 0 auto;
+}
+
+.steam-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.steam-slider {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+  border-radius: 999px;
+  background: #3b3b46;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.steam-slider::before {
+  content: "";
+  position: absolute;
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  top: 3px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #f4f7fb 0%, #cfd8e3 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease;
+}
+
+.steam-switch input:checked + .steam-slider {
+  background: linear-gradient(90deg, #2da86a 0%, #39c27b 100%);
+  border-color: rgba(57, 194, 123, 0.55);
+}
+
+.steam-switch input:checked + .steam-slider::before {
+  transform: translateX(24px);
+}
+
+.steam-switch:hover .steam-slider {
+  border-color: rgba(102, 192, 244, 0.35);
 }
 
 .steam-layout label {

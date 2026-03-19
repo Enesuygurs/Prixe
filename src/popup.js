@@ -170,6 +170,13 @@ function setCheckboxLabel(labelId, text) {
   label.append(` ${text}`);
 }
 
+function syncMasterEnabledInputs(value) {
+  const input = document.getElementById("masterEnabled");
+  if (input) {
+    input.checked = value;
+  }
+}
+
 function applyLanguage(lang) {
   currentLang = lang === "en" ? "en" : "tr";
   document.documentElement.lang = currentLang;
@@ -184,6 +191,7 @@ function applyLanguage(lang) {
   setText("homeHint", t("homeHint"));
   setText("labelHomeFiltersSection", t("labelHomeFiltersSection"));
   setText("labelCheckboxFiltersSection", t("labelCheckboxFiltersSection"));
+  setText("labelMasterEnabledHeader", t("labelMasterEnabled"));
   setText("labelLowPrice", t("labelLowPrice"));
   setText("labelMidPrice", t("labelMidPrice"));
   setText("labelLanguage", t("labelLanguage"));
@@ -203,7 +211,6 @@ function applyLanguage(lang) {
   setText("labelMinReleaseYear", t("labelMinReleaseYear"));
   setText("allYearsOption", t("allYearsOption"));
 
-  setCheckboxLabel("labelMasterEnabled", t("labelMasterEnabled"));
   setCheckboxLabel("labelEnablePriceHighlight", t("labelEnablePriceHighlight"));
   setCheckboxLabel("labelHideMixedOrWorse", t("labelHideMixedOrWorse"));
   setCheckboxLabel("labelSpecials", t("labelSpecials"));
@@ -246,8 +253,9 @@ function togglePanel(panel) {
 }
 
 function readUIState() {
+  const masterEnabledInput = document.getElementById("masterEnabled");
   return {
-    masterEnabled: document.getElementById("masterEnabled").checked,
+    masterEnabled: !!masterEnabledInput?.checked,
     maxPrice: Number(document.getElementById("maxPrice").value || 0),
     specials: document.getElementById("specials").checked,
     hidef2p: document.getElementById("hidef2p").checked,
@@ -274,7 +282,7 @@ function readUIState() {
 }
 
 function writeUIState(state) {
-  document.getElementById("masterEnabled").checked = state.masterEnabled;
+  syncMasterEnabledInputs(state.masterEnabled);
   document.getElementById("maxPrice").value = state.maxPrice;
   document.getElementById("specials").checked = state.specials;
   document.getElementById("hidef2p").checked = state.hidef2p;
@@ -528,6 +536,11 @@ async function bootstrap() {
   homeBtn.addEventListener("click", () => togglePanel("home"));
   checkboxBtn.addEventListener("click", () => togglePanel("checkbox"));
   settingsBtn.addEventListener("click", () => togglePanel("settings"));
+
+  const masterEnabledInput = document.getElementById("masterEnabled");
+  if (masterEnabledInput) {
+    masterEnabledInput.addEventListener("change", () => syncMasterEnabledInputs(masterEnabledInput.checked));
+  }
 
   document.getElementById("languageSelect").addEventListener("change", async (event) => {
     const lang = event.target.value === "en" ? "en" : "tr";

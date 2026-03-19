@@ -9,8 +9,17 @@
 <body class="popup-mode">
   <div class="container">
     <div class="header">
-      <div class="logo">
-        <span class="logo-x">P</span><span class="logo-text">rixe</span>
+      <div class="header-left">
+        <div class="logo">
+          <span class="logo-x">P</span><span class="logo-text">rixe</span>
+        </div>
+        <div class="steam-toggle-row header-toggle-row">
+          <span id="labelMasterEnabledHeader" class="steam-toggle-label">Prixe aktif</span>
+          <label class="steam-switch">
+            <input id="masterEnabled" type="checkbox">
+            <span class="steam-slider"></span>
+          </label>
+        </div>
       </div>
       <div class="header-actions">
         <button id="homeBtn" class="icon-btn tab-btn active" title="Ana Sayfa">
@@ -34,10 +43,6 @@
 
     <section id="settingsPanel" class="settings-panel hidden">
       <div class="settings-content steam-layout">
-        <div class="steam-checkbox-row">
-          <label id="labelMasterEnabled"><input id="masterEnabled" type="checkbox"> Prixe aktif</label>
-        </div>
-
         <label id="labelFilterSettings" class="steam-section-title">Filtre ayarlari</label>
 
         <div class="steam-grid">
