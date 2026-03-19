@@ -470,6 +470,15 @@
     return titleText.trim();
   }
 
+  function applyAppHeaderSpacing() {
+    const headerContent = document.querySelector(".apphub_HomeHeaderContent");
+    if (!headerContent) {
+      return;
+    }
+
+    headerContent.style.marginTop = "10px";
+  }
+
   function removeAppInfo() {
     const actions = document.getElementById(APP_ACTIONS_ID);
     if (actions) {
@@ -640,6 +649,8 @@
     if (!appId || !title || !titleEl) {
       return;
     }
+
+    applyAppHeaderSpacing();
 
     ensureAppActionsElement(titleEl, appId, title);
     ensureAppInfoElement(titleEl);
