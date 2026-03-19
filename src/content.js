@@ -38,6 +38,7 @@
   let skipMutationRefresh = false;
   let activeAppInfoRequestKey = "";
   const appInfoCache = new Map();
+  const appInfoRequestedKeys = new Set();
 
   function isSearchPage() {
     return window.location.pathname.startsWith("/search");
@@ -551,12 +552,28 @@
     info.innerHTML = `
       <div class="event_context">PRIXE INFO</div>
       <div class="saleEventBannerStyle saleEventBannerBig prixe-info-block">
-        <div class="prixe-info-line">En dusuk fiyat: <span class="prixe-info-value" data-field="lowest-price">Yukleniyor...</span></div>
-        <div class="prixe-info-line">Oyun suresi: <span class="prixe-info-value" data-field="duration">Yukleniyor...</span></div>
+        <div class="prixe-info-line"><a class="prixe-info-source-link" data-source-link="lowest-price" href="https://www.cheapshark.com" target="_blank" rel="noopener noreferrer">En dusuk fiyat:</a> <span class="prixe-info-value" data-field="lowest-price">Yukleniyor...</span></div>
+        <div class="prixe-info-line"><a class="prixe-info-source-link" data-source-link="duration" href="https://howlongtobeat.com" target="_blank" rel="noopener noreferrer">Oyun suresi:</a> <span class="prixe-info-value" data-field="duration">Yukleniyor...</span></div>
       </div>
     `;
     parentContainer.insertBefore(info, headerContainer.nextSibling);
     return info;
+  }
+
+  function setAppInfoSourceLink(field, url, sourceName) {
+    const info = document.getElementById(APP_INFO_ID);
+    if (!info) {
+      return;
+    }
+
+    const link = info.querySelector(`[data-source-link="${field}"]`);
+    if (!link) {
+      return;
+    }
+
+    const safeUrl = typeof url === "string" && url.trim() ? url : "#";
+    link.href = safeUrl;
+    link.title = sourceName ? `Kaynak: ${sourceName}` : "Kaynak";
   }
 
   function setAppInfoValue(field, value) {
@@ -591,18 +608,30 @@
       if (!response?.ok || !response.data) {
         return {
           lowestPrice: "Alinamadi",
-          duration: "Alinamadi"
+          duration: "Alinamadi",
+          lowestPriceSourceUrl: "https://www.cheapshark.com",
+          lowestPriceSourceName: "CheapShark",
+          durationSourceUrl: "https://howlongtobeat.com",
+          durationSourceName: "HowLongToBeat"
         };
       }
 
       return {
         lowestPrice: response.data.lowestPrice,
-        duration: response.data.duration
+        duration: response.data.duration,
+        lowestPriceSourceUrl: response.data.lowestPriceSourceUrl,
+        lowestPriceSourceName: response.data.lowestPriceSourceName,
+        durationSourceUrl: response.data.durationSourceUrl,
+        durationSourceName: response.data.durationSourceName
       };
     } catch (error) {
       return {
         lowestPrice: "Alinamadi",
-        duration: "Alinamadi"
+        duration: "Alinamadi",
+        lowestPriceSourceUrl: "https://www.cheapshark.com",
+        lowestPriceSourceName: "CheapShark",
+        durationSourceUrl: "https://howlongtobeat.com",
+        durationSourceName: "HowLongToBeat"
       };
     }
   }
@@ -634,14 +663,17 @@
       const cached = appInfoCache.get(requestKey);
       setAppInfoValue("lowest-price", cached.lowestPrice);
       setAppInfoValue("duration", cached.duration);
+      setAppInfoSourceLink("lowest-price", cached.lowestPriceSourceUrl, cached.lowestPriceSourceName);
+      setAppInfoSourceLink("duration", cached.durationSourceUrl, cached.durationSourceName);
       setAppInfoLoading(false);
       return;
     }
 
-    if (activeAppInfoRequestKey === requestKey) {
+    if (appInfoRequestedKeys.has(requestKey) || activeAppInfoRequestKey === requestKey) {
       return;
     }
 
+    appInfoRequestedKeys.add(requestKey);
     activeAppInfoRequestKey = requestKey;
     setAppInfoLoading(true);
     setAppInfoValue("lowest-price", "Yukleniyor...");
@@ -655,10 +687,20 @@
       return;
     }
 
-    appInfoCache.set(requestKey, { lowestPrice, duration });
+    appInfoCache.set(requestKey, {
+      lowestPrice,
+      duration,
+      lowestPriceSourceUrl: result.lowestPriceSourceUrl,
+      lowestPriceSourceName: result.lowestPriceSourceName,
+      durationSourceUrl: result.durationSourceUrl,
+      durationSourceName: result.durationSourceName
+    });
     setAppInfoValue("lowest-price", lowestPrice);
     setAppInfoValue("duration", duration);
+    setAppInfoSourceLink("lowest-price", result.lowestPriceSourceUrl, result.lowestPriceSourceName);
+    setAppInfoSourceLink("duration", result.durationSourceUrl, result.durationSourceName);
     setAppInfoLoading(false);
+    activeAppInfoRequestKey = "";
   }
 
   function debounce(fn, waitMs) {
