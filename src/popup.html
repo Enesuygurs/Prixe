@@ -3,97 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Steam Search Helper</title>
+  <title>Prixe</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body class="popup-mode">
   <div class="container">
-    <div class="header">
-      <div class="header-left">
-        <div class="logo">
-          <span class="logo-x">P</span><span class="logo-text">rixe</span>
-        </div>
-        <label class="steam-switch">
+    <header class="header">
+      <div class="brand-wrap">
+        <div class="logo"><span class="logo-x">P</span><span class="logo-text">rixe</span></div>
+        <p id="labelAppSubtitle" class="app-subtitle">Steam Search filtrelerini tek noktadan yonet</p>
+      </div>
+      <div class="header-right">
+        <label class="steam-switch" title="Prixe aktif/pasif">
           <input id="masterEnabled" type="checkbox" aria-label="Prixe aktif pasif">
           <span class="steam-slider"></span>
         </label>
+        <select id="languageSelect" class="lang-select" aria-label="Language">
+          <option value="tr">TR</option>
+          <option value="en">EN</option>
+        </select>
       </div>
-      <div class="header-actions">
-        <button id="homeBtn" class="icon-btn tab-btn active" title="Ana Sayfa">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline>
-          </svg>
-        </button>
-        <button id="checkboxBtn" class="icon-btn tab-btn" title="Checkboxlar">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="4" width="18" height="16" rx="2"></rect>
-            <path d="M7 9h4M7 15h4M13 9h4M13 15h4"></path>
-          </svg>
-        </button>
-        <button id="settingsBtn" class="icon-btn tab-btn" title="Ayarlar">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="3"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
+    </header>
 
-    <section id="settingsPanel" class="settings-panel hidden">
-      <div class="settings-content steam-layout">
-        <label id="labelFilterSettings" class="steam-section-title">Filtre ayarlari</label>
-
-        <div class="steam-grid">
-          <div>
-            <label id="labelLowPrice" for="lowPrice">Dusuk fiyat limiti ($)</label>
-            <input id="lowPrice" type="number" min="0" step="1">
-          </div>
-          <div>
-            <label id="labelMidPrice" for="midPrice">Orta fiyat limiti ($)</label>
-            <input id="midPrice" type="number" min="1" step="1">
-          </div>
-        </div>
-
-        <div class="steam-checkbox-row">
-          <label id="labelEnablePriceHighlight"><input id="enablePriceHighlight" type="checkbox"> Fiyat isaretleme aktif</label>
-          <label id="labelHideMixedOrWorse"><input id="hideMixedOrWorse" type="checkbox"> Mixed ve alti gizle</label>
-        </div>
-
-        <div class="steam-actions">
-          <button id="saveSettingsBtn" class="btn-save">Ayar Kaydet</button>
-          <button id="resetBtn" class="steam-pill">Sifirla</button>
-        </div>
-
-        <div class="steam-section-divider"></div>
-
-        <label id="labelLanguageSection" class="steam-section-title">Language</label>
-
-        <div>
-          <select id="languageSelect">
-            <option value="tr">Türkçe</option>
-            <option value="en">English</option>
-          </select>
-        </div>
-      </div>
-    </section>
-
-    <div id="homePanel" class="main-area">
-      <div class="settings-content steam-layout">
-        <label id="labelHomeFiltersSection" class="steam-section-title">Search filters</label>
-
-        <div>
+    <main class="main-area">
+      <section class="panel-card">
+        <h2 id="labelHomeFiltersSection" class="section-title">Search filters</h2>
+        <div class="field">
           <label id="labelMaxPrice" for="maxPrice">Max fiyat (USD)</label>
           <input id="maxPrice" type="number" min="0" step="1">
         </div>
-
-        <div class="steam-preset-row">
-          <button class="steam-pill preset" data-maxprice="5">$5</button>
-          <button class="steam-pill preset" data-maxprice="10">$10</button>
-          <button class="steam-pill preset" data-maxprice="20">$20</button>
-          <button class="steam-pill preset" data-maxprice="40">$40</button>
+        <div class="preset-row">
+          <button class="chip-btn preset" data-maxprice="5">$5</button>
+          <button class="chip-btn preset" data-maxprice="10">$10</button>
+          <button class="chip-btn preset" data-maxprice="20">$20</button>
+          <button class="chip-btn preset" data-maxprice="40">$40</button>
         </div>
-
-        <div class="steam-grid">
-          <div>
+        <div class="two-col-grid">
+          <div class="field">
             <label id="labelMinDiscount" for="minDiscount">Min indirim (%)</label>
             <select id="minDiscount">
               <option value="0">0</option>
@@ -103,7 +49,7 @@
               <option value="75">75</option>
             </select>
           </div>
-          <div>
+          <div class="field">
             <label id="labelReviewFilter" for="reviewFilter">Inceleme filtresi</label>
             <select id="reviewFilter">
               <option id="reviewAny" value="any">Tum skorlar</option>
@@ -112,9 +58,8 @@
             </select>
           </div>
         </div>
-
-        <div class="steam-grid">
-          <div>
+        <div class="two-col-grid">
+          <div class="field">
             <label id="labelMinReviews" for="minReviews">Min inceleme adedi</label>
             <select id="minReviews">
               <option value="0">0</option>
@@ -124,7 +69,7 @@
               <option value="1000">1000</option>
             </select>
           </div>
-          <div>
+          <div class="field">
             <label id="labelSortBy" for="sortBy">Siralama</label>
             <select id="sortBy">
               <option id="sortDefault" value="default">Steam varsayilan</option>
@@ -134,9 +79,8 @@
             </select>
           </div>
         </div>
-
-        <div class="steam-grid">
-          <div>
+        <div class="two-col-grid">
+          <div class="field">
             <label id="labelMinUserScore" for="minUserScore">Min olumlu oran (%)</label>
             <select id="minUserScore">
               <option value="0">0</option>
@@ -146,7 +90,7 @@
               <option value="95">95</option>
             </select>
           </div>
-          <div>
+          <div class="field">
             <label id="labelMinReleaseYear" for="minReleaseYear">Min cikis yili</label>
             <select id="minReleaseYear">
               <option id="allYearsOption" value="0">Tum yillar</option>
@@ -157,47 +101,53 @@
             </select>
           </div>
         </div>
+      </section>
 
-        <div class="steam-actions">
-          <button id="applyBtn" class="btn-save">Uygula</button>
-          <button id="openSearchBtn" class="steam-pill">Steam Search Ac</button>
+      <section class="panel-card">
+        <h2 id="labelCheckboxFiltersSection" class="section-title">Checkbox filters</h2>
+        <div class="check-grid">
+          <label id="labelSpecials" class="check-item"><input id="specials" type="checkbox"> Sadece indirimde</label>
+          <label id="labelHidef2p" class="check-item"><input id="hidef2p" type="checkbox"> Ucretsizleri gizle</label>
+          <label id="labelNdl" class="check-item"><input id="ndl" type="checkbox"> DLC gizle</label>
+          <label id="labelHideEarlyAccess" class="check-item"><input id="hideEarlyAccess" type="checkbox"> Early Access gizle</label>
+          <label id="labelOnlyTradingCards" class="check-item"><input id="onlyTradingCards" type="checkbox"> Steam koleksiyon kartlari</label>
+          <label id="labelOnlyAchievements" class="check-item"><input id="onlyAchievements" type="checkbox"> Steam basarimlari</label>
+          <label id="labelOnlyCloudSaves" class="check-item"><input id="onlyCloudSaves" type="checkbox"> Steam Cloud</label>
+          <label id="labelHideComingSoon" class="check-item"><input id="hideComingSoon" type="checkbox"> Coming Soon gizle</label>
         </div>
+        <div class="platform-row">
+          <label class="check-item" id="labelPlatformWin"><input id="platformWin" type="checkbox"> Win</label>
+          <label class="check-item" id="labelPlatformMac"><input id="platformMac" type="checkbox"> Mac</label>
+          <label class="check-item" id="labelPlatformLinux"><input id="platformLinux" type="checkbox"> Linux</label>
+        </div>
+      </section>
 
-        <p id="status" class="steam-status"></p>
+      <section class="panel-card">
+        <h2 id="labelFilterSettings" class="section-title">Filtre ayarlari</h2>
+        <div class="two-col-grid">
+          <div class="field">
+            <label id="labelLowPrice" for="lowPrice">Dusuk fiyat limiti ($)</label>
+            <input id="lowPrice" type="number" min="0" step="1">
+          </div>
+          <div class="field">
+            <label id="labelMidPrice" for="midPrice">Orta fiyat limiti ($)</label>
+            <input id="midPrice" type="number" min="1" step="1">
+          </div>
+        </div>
+        <div class="check-grid compact">
+          <label id="labelEnablePriceHighlight" class="check-item"><input id="enablePriceHighlight" type="checkbox"> Fiyat isaretleme aktif</label>
+          <label id="labelHideMixedOrWorse" class="check-item"><input id="hideMixedOrWorse" type="checkbox"> Mixed ve alti gizle</label>
+        </div>
+      </section>
+
+      <div class="action-row">
+        <button id="applyBtn" class="btn-primary">Uygula</button>
+        <button id="openSearchBtn" class="btn-secondary">Steam Search Ac</button>
+        <button id="resetBtn" class="btn-ghost">Sifirla</button>
       </div>
-    </div>
 
-    <section id="checkboxPanel" class="settings-panel hidden">
-      <div class="settings-content steam-layout">
-        <label id="labelCheckboxFiltersSection" class="steam-section-title">CHECKBOX FILTERS</label>
-
-        <div class="steam-checkbox-row">
-          <label id="labelSpecials"><input id="specials" type="checkbox"> Sadece indirimde</label>
-          <label id="labelHidef2p"><input id="hidef2p" type="checkbox"> Ucretsizleri gizle</label>
-        </div>
-
-        <div class="steam-checkbox-row">
-          <label id="labelNdl"><input id="ndl" type="checkbox"> DLC gizle</label>
-          <label id="labelHideEarlyAccess"><input id="hideEarlyAccess" type="checkbox"> Early Access gizle</label>
-        </div>
-
-        <div class="steam-checkbox-row">
-          <label id="labelOnlyTradingCards"><input id="onlyTradingCards" type="checkbox"> Steam koleksiyon kartlari</label>
-          <label id="labelOnlyAchievements"><input id="onlyAchievements" type="checkbox"> Steam basarimlari</label>
-        </div>
-
-        <div class="steam-checkbox-row">
-          <label id="labelOnlyCloudSaves"><input id="onlyCloudSaves" type="checkbox"> Steam Cloud</label>
-          <label id="labelHideComingSoon"><input id="hideComingSoon" type="checkbox"> Coming Soon gizle</label>
-        </div>
-
-        <div class="steam-checkbox-row steam-platform-row">
-          <label id="labelPlatformWin"><input id="platformWin" type="checkbox"> Win</label>
-          <label id="labelPlatformMac"><input id="platformMac" type="checkbox"> Mac</label>
-          <label id="labelPlatformLinux"><input id="platformLinux" type="checkbox"> Linux</label>
-        </div>
-      </div>
-    </section>
+      <p id="status" class="status-line"></p>
+    </main>
   </div>
 
   <script src="popup.js"></script>

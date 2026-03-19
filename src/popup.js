@@ -32,63 +32,52 @@ const STORAGE_KEYS = {
 const STRINGS = {
   tr: {
     labelMasterEnabled: "Prixe aktif",
-    homeTitle: "Ana Sayfa",
-    checkboxTitle: "Checkbox'lar",
-    settingsTitle: "Ayarlar",
-    settingsHint: "Fiyat işaretleme eşikleri ve kalite filtreleri.",
-    labelFilterSettings: "FİLTRE AYARLARI",
-    labelLanguageSection: "DİL",
-    homeHint: "Steam Search URL filtresi ve sayfa içi hızlı filtreleme.",
-    labelHomeFiltersSection: "ARAMA FİLTRELERİ",
-    labelCheckboxFiltersSection: "CHECKBOX FİLTRELERİ",
-    labelLowPrice: "Düşük fiyat limiti ($)",
+    appSubtitle: "Steam Search filtrelerini tek noktadan yonet",
+    labelFilterSettings: "FILTRE AYARLARI",
+    labelHomeFiltersSection: "ARAMA FILTRELERI",
+    labelCheckboxFiltersSection: "CHECKBOX FILTRELERI",
+    labelLowPrice: "Dusuk fiyat limiti ($)",
     labelMidPrice: "Orta fiyat limiti ($)",
-    labelEnablePriceHighlight: "Fiyat işaretleme aktif",
-    labelHideMixedOrWorse: "Mixed ve altı gizle",
+    labelEnablePriceHighlight: "Fiyat isaretleme aktif",
+    labelHideMixedOrWorse: "Mixed ve alti gizle",
     labelMaxPrice: "Max fiyat (USD)",
     labelSpecials: "Sadece indirimde",
-    labelHidef2p: "Ücretsizleri gizle",
+    labelHidef2p: "Ucretsizleri gizle",
     labelNdl: "DLC gizle",
     labelHideEarlyAccess: "Early Access gizle",
     labelMinDiscount: "Min indirim (%)",
-    labelReviewFilter: "İnceleme filtresi",
-    reviewAny: "Tüm skorlar",
-    reviewPositivePlus: "Pozitif ve üzeri",
-    reviewVeryPositivePlus: "Çok pozitif ve üzeri",
+    labelReviewFilter: "Inceleme filtresi",
+    reviewAny: "Tum skorlar",
+    reviewPositivePlus: "Pozitif ve uzeri",
+    reviewVeryPositivePlus: "Cok pozitif ve uzeri",
     labelMinReviews: "Min inceleme adedi",
-    labelSortBy: "Sıralama",
-    sortDefault: "Steam varsayılan",
+    labelSortBy: "Siralama",
+    sortDefault: "Steam varsayilan",
     sortPriceAsc: "Fiyat artan",
     sortPriceDesc: "Fiyat azalan",
-    sortDiscountDesc: "İndirim yüksekten",
+    sortDiscountDesc: "Indirim yuksekten",
     labelMinUserScore: "Min olumlu oran (%)",
-    labelMinReleaseYear: "Min çıkış yılı",
-    allYearsOption: "Tüm yıllar",
-    labelOnlyTradingCards: "Steam koleksiyon kartları",
-    labelOnlyAchievements: "Steam başarımları",
+    labelMinReleaseYear: "Min cikis yili",
+    allYearsOption: "Tum yillar",
+    labelOnlyTradingCards: "Steam koleksiyon kartlari",
+    labelOnlyAchievements: "Steam basarimlari",
     labelOnlyCloudSaves: "Steam Cloud",
     labelHideComingSoon: "Coming Soon gizle",
     applyBtn: "Uygula",
-    openSearchBtn: "Steam Search Aç",
-    resetBtn: "Sıfırla",
-    saveSettingsBtn: "Ayar Kaydet",
-    visibleText: "Görünen",
-    errMidLessThanLow: "Orta fiyat, düşük fiyattan küçük olamaz.",
-    statusApplied: "Steam arama filtreleri uygulandı.",
-    statusSaved: "Ayarlar kaydedildi.",
-    statusSearchOpened: "Steam Search açıldı.",
-    statusReset: "Varsayılan ayarlara dönüldü.",
-    statusDisabled: "Prixe kapalı. Steam sayfasında işlem yapılmadı."
+    openSearchBtn: "Steam Search Ac",
+    resetBtn: "Sifirla",
+    visibleText: "Gorunen",
+    errMidLessThanLow: "Orta fiyat, dusuk fiyattan kucuk olamaz.",
+    statusApplied: "Steam arama filtreleri uygulandi.",
+    statusSaved: "Ayarlar otomatik kaydedildi.",
+    statusSearchOpened: "Steam Search acildi.",
+    statusReset: "Varsayilan ayarlara donuldu.",
+    statusDisabled: "Prixe kapali. Steam sayfasinda islem yapilmadi."
   },
   en: {
     labelMasterEnabled: "Prixe enabled",
-    homeTitle: "Home",
-    checkboxTitle: "Checkboxes",
-    settingsTitle: "Settings",
-    settingsHint: "Price highlight thresholds and quality filters.",
+    appSubtitle: "Manage Steam Search filters from one place",
     labelFilterSettings: "FILTER SETTINGS",
-    labelLanguageSection: "LANGUAGE",
-    homeHint: "Steam Search URL filters and on-page quick filtering.",
     labelHomeFiltersSection: "SEARCH FILTERS",
     labelCheckboxFiltersSection: "CHECKBOX FILTERS",
     labelLowPrice: "Low price threshold ($)",
@@ -121,11 +110,10 @@ const STRINGS = {
     applyBtn: "Apply",
     openSearchBtn: "Open Search",
     resetBtn: "Reset",
-    saveSettingsBtn: "Save Settings",
     visibleText: "Visible",
     errMidLessThanLow: "Mid price cannot be less than low price.",
     statusApplied: "Steam search filters applied.",
-    statusSaved: "Settings saved.",
+    statusSaved: "Settings auto-saved.",
     statusSearchOpened: "Steam Search opened.",
     statusReset: "Defaults restored.",
     statusDisabled: "Prixe is disabled. No action was applied on Steam page."
@@ -134,12 +122,6 @@ const STRINGS = {
 
 let currentLang = "tr";
 
-const homeBtn = document.getElementById("homeBtn");
-const checkboxBtn = document.getElementById("checkboxBtn");
-const settingsBtn = document.getElementById("settingsBtn");
-const homePanel = document.getElementById("homePanel");
-const checkboxPanel = document.getElementById("checkboxPanel");
-const settingsPanel = document.getElementById("settingsPanel");
 const statusEl = document.getElementById("status");
 
 function t(key) {
@@ -170,91 +152,44 @@ function setCheckboxLabel(labelId, text) {
   label.append(` ${text}`);
 }
 
-function syncMasterEnabledInputs(value) {
-  const input = document.getElementById("masterEnabled");
-  if (input) {
-    input.checked = value;
-  }
-}
-
-function applyLanguage(lang) {
-  currentLang = lang === "en" ? "en" : "tr";
-  document.documentElement.lang = currentLang;
-
-  homeBtn.title = t("homeTitle");
-  checkboxBtn.title = t("checkboxTitle");
-  settingsBtn.title = t("settingsTitle");
-
-  setText("settingsHint", t("settingsHint"));
-  setText("labelFilterSettings", t("labelFilterSettings"));
-  setText("labelLanguageSection", t("labelLanguageSection"));
-  setText("homeHint", t("homeHint"));
-  setText("labelHomeFiltersSection", t("labelHomeFiltersSection"));
-  setText("labelCheckboxFiltersSection", t("labelCheckboxFiltersSection"));
-  setText("labelLowPrice", t("labelLowPrice"));
-  setText("labelMidPrice", t("labelMidPrice"));
-  setText("labelLanguage", t("labelLanguage"));
-  setText("labelMaxPrice", t("labelMaxPrice"));
-  setText("labelMinDiscount", t("labelMinDiscount"));
-  setText("labelReviewFilter", t("labelReviewFilter"));
-  setText("reviewAny", t("reviewAny"));
-  setText("reviewPositivePlus", t("reviewPositivePlus"));
-  setText("reviewVeryPositivePlus", t("reviewVeryPositivePlus"));
-  setText("labelMinReviews", t("labelMinReviews"));
-  setText("labelSortBy", t("labelSortBy"));
-  setText("sortDefault", t("sortDefault"));
-  setText("sortPriceAsc", t("sortPriceAsc"));
-  setText("sortPriceDesc", t("sortPriceDesc"));
-  setText("sortDiscountDesc", t("sortDiscountDesc"));
-  setText("labelMinUserScore", t("labelMinUserScore"));
-  setText("labelMinReleaseYear", t("labelMinReleaseYear"));
-  setText("allYearsOption", t("allYearsOption"));
-
-  setCheckboxLabel("labelEnablePriceHighlight", t("labelEnablePriceHighlight"));
-  setCheckboxLabel("labelHideMixedOrWorse", t("labelHideMixedOrWorse"));
-  setCheckboxLabel("labelSpecials", t("labelSpecials"));
-  setCheckboxLabel("labelHidef2p", t("labelHidef2p"));
-  setCheckboxLabel("labelNdl", t("labelNdl"));
-  setCheckboxLabel("labelHideEarlyAccess", t("labelHideEarlyAccess"));
-  setCheckboxLabel("labelOnlyTradingCards", t("labelOnlyTradingCards"));
-  setCheckboxLabel("labelOnlyAchievements", t("labelOnlyAchievements"));
-  setCheckboxLabel("labelOnlyCloudSaves", t("labelOnlyCloudSaves"));
-  setCheckboxLabel("labelHideComingSoon", t("labelHideComingSoon"));
-
-  setText("applyBtn", t("applyBtn"));
-  setText("openSearchBtn", t("openSearchBtn"));
-  setText("resetBtn", t("resetBtn"));
-  setText("saveSettingsBtn", t("saveSettingsBtn"));
-
-  const languageSelect = document.getElementById("languageSelect");
-  if (languageSelect) {
-    languageSelect.value = currentLang;
-  }
-}
-
 function setStatus(text, isError = false) {
   statusEl.textContent = text;
-  statusEl.style.color = isError ? "#ff9a9a" : "#8ce0aa";
+  statusEl.style.color = isError ? "#ffb3b3" : "#8ce0aa";
 }
 
-function togglePanel(panel) {
-  const showHome = panel === "home";
-  const showCheckbox = panel === "checkbox";
-  const showSettings = panel === "settings";
-
-  homePanel.classList.toggle("hidden", !showHome);
-  checkboxPanel.classList.toggle("hidden", !showCheckbox);
-  settingsPanel.classList.toggle("hidden", !showSettings);
-
-  homeBtn.classList.toggle("active", showHome);
-  checkboxBtn.classList.toggle("active", showCheckbox);
-  settingsBtn.classList.toggle("active", showSettings);
+function getSettingsSourceInputs() {
+  return [
+    "masterEnabled",
+    "maxPrice",
+    "specials",
+    "hidef2p",
+    "ndl",
+    "minDiscount",
+    "minReviews",
+    "minUserScore",
+    "minReleaseYear",
+    "sortBy",
+    "reviewFilter",
+    "onlyTradingCards",
+    "onlyAchievements",
+    "onlyCloudSaves",
+    "hideComingSoon",
+    "platformWin",
+    "platformMac",
+    "platformLinux",
+    "hideEarlyAccess",
+    "hideMixedOrWorse",
+    "enablePriceHighlight",
+    "lowPrice",
+    "midPrice"
+  ]
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
 }
 
 function readUIState() {
-  const masterEnabledInput = document.getElementById("masterEnabled");
   return {
-    masterEnabled: !!masterEnabledInput?.checked,
+    masterEnabled: !!document.getElementById("masterEnabled")?.checked,
     maxPrice: Number(document.getElementById("maxPrice").value || 0),
     specials: document.getElementById("specials").checked,
     hidef2p: document.getElementById("hidef2p").checked,
@@ -281,7 +216,7 @@ function readUIState() {
 }
 
 function writeUIState(state) {
-  syncMasterEnabledInputs(state.masterEnabled);
+  document.getElementById("masterEnabled").checked = state.masterEnabled;
   document.getElementById("maxPrice").value = state.maxPrice;
   document.getElementById("specials").checked = state.specials;
   document.getElementById("hidef2p").checked = state.hidef2p;
@@ -336,6 +271,13 @@ function sanitizeState(inputState) {
   };
 }
 
+function validatePriceThresholds(state) {
+  if (state.midPrice < state.lowPrice) {
+    return t("errMidLessThanLow");
+  }
+  return null;
+}
+
 function buildSteamSearchUrl(state, existingUrl) {
   const url = new URL(existingUrl || "https://store.steampowered.com/search/");
   if (!url.pathname.startsWith("/search")) {
@@ -386,7 +328,6 @@ function buildSteamSearchUrl(state, existingUrl) {
     }
   };
 
-  // Steam feature IDs in category2
   updateCategoryFeature("29", state.onlyTradingCards);
   updateCategoryFeature("22", state.onlyAchievements);
   updateCategoryFeature("23", state.onlyCloudSaves);
@@ -411,7 +352,6 @@ async function notifyContentScript(tabId, state) {
     });
     return response || null;
   } catch (err) {
-    // Content script may not be ready on this tab yet.
     return null;
   }
 }
@@ -427,20 +367,33 @@ function isSteamManagedTabUrl(url) {
   if (!url || !url.startsWith("https://store.steampowered.com/")) {
     return false;
   }
-
   return url.startsWith("https://store.steampowered.com/search") || url.startsWith("https://store.steampowered.com/app/");
 }
 
-function validatePriceThresholds(state) {
-  if (state.midPrice < state.lowPrice) {
-    return t("errMidLessThanLow");
+async function persistSettingsFromUI() {
+  const state = sanitizeState(readUIState());
+  writeUIState(state);
+
+  const validationError = validatePriceThresholds(state);
+  if (validationError) {
+    setStatus(validationError, true);
+    return;
   }
-  return null;
+
+  await saveState(state);
+
+  const tab = await getActiveTab();
+  if (tab?.id && isSteamManagedTabUrl(tab.url)) {
+    await notifyContentScript(tab.id, state);
+  }
+
+  setStatus(state.masterEnabled ? t("statusSaved") : t("statusDisabled"));
 }
 
 async function applyFiltersToSteam() {
   const state = sanitizeState(readUIState());
   writeUIState(state);
+
   const validationError = validatePriceThresholds(state);
   if (validationError) {
     setStatus(validationError, true);
@@ -450,9 +403,9 @@ async function applyFiltersToSteam() {
   await saveState(state);
 
   if (!state.masterEnabled) {
-    const tab = await getActiveTab();
-    if (tab?.id && isSteamManagedTabUrl(tab.url)) {
-      await notifyContentScript(tab.id, state);
+    const tabDisabled = await getActiveTab();
+    if (tabDisabled?.id && isSteamManagedTabUrl(tabDisabled.url)) {
+      await notifyContentScript(tabDisabled.id, state);
     }
     setStatus(t("statusDisabled"));
     return;
@@ -463,7 +416,7 @@ async function applyFiltersToSteam() {
   const targetUrl = buildSteamSearchUrl(state, isSteamSearch ? tab.url : "https://store.steampowered.com/search/");
 
   let runtimeStats = null;
-  if (isSteamSearch) {
+  if (isSteamSearch && tab?.id) {
     if (tab.url === targetUrl) {
       runtimeStats = await notifyContentScript(tab.id, state);
     } else {
@@ -476,52 +429,81 @@ async function applyFiltersToSteam() {
   setStatus(`${t("statusApplied")}${formatStats(runtimeStats?.stats)}`);
 }
 
-async function saveSettingsOnly() {
-  const state = sanitizeState(readUIState());
-  writeUIState(state);
-  const validationError = validatePriceThresholds(state);
-  if (validationError) {
-    setStatus(validationError, true);
-    return;
-  }
-
-  await saveState(state);
-
-  const tab = await getActiveTab();
-  let runtimeStats = null;
-  if (tab?.id && isSteamManagedTabUrl(tab.url)) {
-    runtimeStats = await notifyContentScript(tab.id, state);
-  }
-  if (!state.masterEnabled) {
-    setStatus(t("statusDisabled"));
-    return;
-  }
-  setStatus(`${t("statusSaved")}${formatStats(runtimeStats?.stats)}`);
-}
-
 async function openSteamSearch() {
   const state = sanitizeState(readUIState());
   writeUIState(state);
   await saveState(state);
+
   const targetUrl = state.masterEnabled
     ? buildSteamSearchUrl(state, "https://store.steampowered.com/search/")
     : "https://store.steampowered.com/search/";
+
   await chrome.tabs.create({ url: targetUrl });
-  if (!state.masterEnabled) {
-    setStatus(t("statusDisabled"));
-    return;
-  }
-  setStatus(t("statusSearchOpened"));
+  setStatus(state.masterEnabled ? t("statusSearchOpened") : t("statusDisabled"));
 }
 
 async function resetState() {
   writeUIState(DEFAULT_STATE);
   await saveState(DEFAULT_STATE);
+
   const tab = await getActiveTab();
   if (tab?.id && tab.url && tab.url.startsWith("https://store.steampowered.com/search")) {
     await notifyContentScript(tab.id, DEFAULT_STATE);
   }
+
   setStatus(t("statusReset"));
+}
+
+function applyLanguage(lang) {
+  currentLang = lang === "en" ? "en" : "tr";
+  document.documentElement.lang = currentLang;
+
+  setText("labelAppSubtitle", t("appSubtitle"));
+  setText("labelFilterSettings", t("labelFilterSettings"));
+  setText("labelHomeFiltersSection", t("labelHomeFiltersSection"));
+  setText("labelCheckboxFiltersSection", t("labelCheckboxFiltersSection"));
+  setText("labelLowPrice", t("labelLowPrice"));
+  setText("labelMidPrice", t("labelMidPrice"));
+  setText("labelMaxPrice", t("labelMaxPrice"));
+  setText("labelMinDiscount", t("labelMinDiscount"));
+  setText("labelReviewFilter", t("labelReviewFilter"));
+  setText("reviewAny", t("reviewAny"));
+  setText("reviewPositivePlus", t("reviewPositivePlus"));
+  setText("reviewVeryPositivePlus", t("reviewVeryPositivePlus"));
+  setText("labelMinReviews", t("labelMinReviews"));
+  setText("labelSortBy", t("labelSortBy"));
+  setText("sortDefault", t("sortDefault"));
+  setText("sortPriceAsc", t("sortPriceAsc"));
+  setText("sortPriceDesc", t("sortPriceDesc"));
+  setText("sortDiscountDesc", t("sortDiscountDesc"));
+  setText("labelMinUserScore", t("labelMinUserScore"));
+  setText("labelMinReleaseYear", t("labelMinReleaseYear"));
+  setText("allYearsOption", t("allYearsOption"));
+
+  setCheckboxLabel("labelEnablePriceHighlight", t("labelEnablePriceHighlight"));
+  setCheckboxLabel("labelHideMixedOrWorse", t("labelHideMixedOrWorse"));
+  setCheckboxLabel("labelSpecials", t("labelSpecials"));
+  setCheckboxLabel("labelHidef2p", t("labelHidef2p"));
+  setCheckboxLabel("labelNdl", t("labelNdl"));
+  setCheckboxLabel("labelHideEarlyAccess", t("labelHideEarlyAccess"));
+  setCheckboxLabel("labelOnlyTradingCards", t("labelOnlyTradingCards"));
+  setCheckboxLabel("labelOnlyAchievements", t("labelOnlyAchievements"));
+  setCheckboxLabel("labelOnlyCloudSaves", t("labelOnlyCloudSaves"));
+  setCheckboxLabel("labelHideComingSoon", t("labelHideComingSoon"));
+
+  setText("applyBtn", t("applyBtn"));
+  setText("openSearchBtn", t("openSearchBtn"));
+  setText("resetBtn", t("resetBtn"));
+
+  const languageSelect = document.getElementById("languageSelect");
+  if (languageSelect) {
+    languageSelect.value = currentLang;
+  }
+
+  const masterEnabled = document.getElementById("masterEnabled");
+  if (masterEnabled) {
+    masterEnabled.setAttribute("aria-label", t("labelMasterEnabled"));
+  }
 }
 
 async function bootstrap() {
@@ -532,15 +514,6 @@ async function bootstrap() {
   writeUIState(state);
   applyLanguage(currentLang);
 
-  homeBtn.addEventListener("click", () => togglePanel("home"));
-  checkboxBtn.addEventListener("click", () => togglePanel("checkbox"));
-  settingsBtn.addEventListener("click", () => togglePanel("settings"));
-
-  const masterEnabledInput = document.getElementById("masterEnabled");
-  if (masterEnabledInput) {
-    masterEnabledInput.addEventListener("change", () => syncMasterEnabledInputs(masterEnabledInput.checked));
-  }
-
   document.getElementById("languageSelect").addEventListener("change", async (event) => {
     const lang = event.target.value === "en" ? "en" : "tr";
     await chrome.storage.local.set({ [STORAGE_KEYS.language]: lang });
@@ -548,14 +521,21 @@ async function bootstrap() {
   });
 
   document.querySelectorAll(".preset").forEach((button) => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
       const maxPrice = Number(button.dataset.maxprice || "0");
       document.getElementById("maxPrice").value = String(maxPrice);
+      await persistSettingsFromUI();
+    });
+  });
+
+  getSettingsSourceInputs().forEach((input) => {
+    const eventName = input.tagName === "SELECT" || input.type === "checkbox" ? "change" : "input";
+    input.addEventListener(eventName, () => {
+      persistSettingsFromUI();
     });
   });
 
   document.getElementById("applyBtn").addEventListener("click", applyFiltersToSteam);
-  document.getElementById("saveSettingsBtn").addEventListener("click", saveSettingsOnly);
   document.getElementById("openSearchBtn").addEventListener("click", openSteamSearch);
   document.getElementById("resetBtn").addEventListener("click", resetState);
 }
