@@ -14,9 +14,6 @@ const DEFAULT_STATE = {
   onlyAchievements: false,
   onlyCloudSaves: false,
   hideComingSoon: false,
-  platformWin: true,
-  platformMac: true,
-  platformLinux: true,
   hideEarlyAccess: false,
   hideMixedOrWorse: false,
   enablePriceHighlight: true,
@@ -192,9 +189,6 @@ function getSettingsSourceInputs() {
     "onlyAchievements",
     "onlyCloudSaves",
     "hideComingSoon",
-    "platformWin",
-    "platformMac",
-    "platformLinux",
     "hideEarlyAccess",
     "hideMixedOrWorse",
     "enablePriceHighlight",
@@ -222,9 +216,6 @@ function readUIState() {
     onlyAchievements: document.getElementById("onlyAchievements").checked,
     onlyCloudSaves: document.getElementById("onlyCloudSaves").checked,
     hideComingSoon: document.getElementById("hideComingSoon").checked,
-    platformWin: document.getElementById("platformWin").checked,
-    platformMac: document.getElementById("platformMac").checked,
-    platformLinux: document.getElementById("platformLinux").checked,
     hideEarlyAccess: document.getElementById("hideEarlyAccess").checked,
     hideMixedOrWorse: document.getElementById("hideMixedOrWorse").checked,
     enablePriceHighlight: document.getElementById("enablePriceHighlight").checked,
@@ -249,9 +240,6 @@ function writeUIState(state) {
   document.getElementById("onlyAchievements").checked = state.onlyAchievements;
   document.getElementById("onlyCloudSaves").checked = state.onlyCloudSaves;
   document.getElementById("hideComingSoon").checked = state.hideComingSoon;
-  document.getElementById("platformWin").checked = state.platformWin;
-  document.getElementById("platformMac").checked = state.platformMac;
-  document.getElementById("platformLinux").checked = state.platformLinux;
   document.getElementById("hideEarlyAccess").checked = state.hideEarlyAccess;
   document.getElementById("hideMixedOrWorse").checked = state.hideMixedOrWorse;
   document.getElementById("enablePriceHighlight").checked = state.enablePriceHighlight;
