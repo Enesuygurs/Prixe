@@ -108,6 +108,13 @@
         box-shadow: unset;
       }
 
+      .prixe-info-line {
+        background: #00000036;
+        padding: 8px;
+        margin: 4px;
+        font-size: 14px;
+      }
+
     `;
 
     document.head.appendChild(style);
