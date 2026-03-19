@@ -150,11 +150,11 @@ function formatMinutesAsHours(minutes) {
     return "Bulunamadi";
   }
 
-  if (hours < 10) {
-    return `${hours.toFixed(1)} saat`;
+  if (hours < 1) {
+    return "1 saat";
   }
 
-  return `${Math.round(hours)} saat`;
+  return `${Math.floor(hours)} saat`;
 }
 
 async function fetchSteamSpyDuration(appId) {
@@ -168,10 +168,10 @@ async function fetchSteamSpyDuration(appId) {
     }
 
     const data = await response.json();
-    const medianMinutes = Number(data?.median_forever);
     const averageMinutes = Number(data?.average_forever);
+    const medianMinutes = Number(data?.median_forever);
 
-    const duration = formatMinutesAsHours(medianMinutes > 0 ? medianMinutes : averageMinutes);
+    const duration = formatMinutesAsHours(averageMinutes > 0 ? averageMinutes : medianMinutes);
     if (duration === "Bulunamadi") {
       return { value: "Bulunamadi", sourceUrl: `https://steamspy.com/app/${appId}`, sourceName: "SteamSpy" };
     }
