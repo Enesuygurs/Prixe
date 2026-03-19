@@ -170,6 +170,7 @@
         width: auto !important;
         margin: 0 !important;
         white-space: nowrap !important;
+        transition: background 0.2s ease, transform 0.2s ease;
       }
 
       #${APP_ACTIONS_ID} .btnv6_blue_hoverfade.btn_medium span {
@@ -186,6 +187,11 @@
         color: #ffd760ed !important;
       }
 
+      #${APP_ACTIONS_ID} .prixe-btn-steam-card:hover {
+        background: #e3ac12b0 !important;
+        transform: translateY(-1px);
+      }
+
       #${APP_ACTIONS_ID} .prixe-btn-gameplay {
         background: #ff008b5e !important;
       }
@@ -194,12 +200,22 @@
         color: #ff8dcb !important;
       }
 
+      #${APP_ACTIONS_ID} .prixe-btn-gameplay:hover {
+        background: #ff2fa17a !important;
+        transform: translateY(-1px);
+      }
+
       #${APP_ACTIONS_ID} .prixe-btn-steamdb {
         background: #0b5f9f !important;
       }
 
       #${APP_ACTIONS_ID} .prixe-btn-steamdb span {
         color: #c9e9ff !important;
+      }
+
+      #${APP_ACTIONS_ID} .prixe-btn-steamdb:hover {
+        background: #1280d1 !important;
+        transform: translateY(-1px);
       }
 
       .saleEventBannerStyle:hover {
