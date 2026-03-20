@@ -28,9 +28,15 @@
     <main class="main-area">
       <section class="panel-card">
         <h2 id="labelHomeFiltersSection" class="section-title">Arama filtreleri</h2>
-        <div class="field">
-          <label id="labelMaxPrice" for="maxPrice">Max fiyat (USD)</label>
-          <input id="maxPrice" type="number" min="0" step="1">
+        <div class="two-col-grid">
+          <div class="field">
+            <label id="labelMaxPrice" for="maxPrice">Max fiyat (USD)</label>
+            <input id="maxPrice" type="number" min="0" step="1">
+          </div>
+          <div class="field">
+            <label id="labelMinDiscount" for="minDiscount">Min indirim (%)</label>
+            <input id="minDiscount" type="number" min="0" step="1">
+          </div>
         </div>
         <div class="field">
           <label id="labelCategory1" for="category1">Kategori</label>
@@ -52,25 +58,13 @@
           <button class="chip-btn preset" data-maxprice="20">$20</button>
           <button class="chip-btn preset" data-maxprice="40">$40</button>
         </div>
-        <div class="two-col-grid">
-          <div class="field">
-            <label id="labelMinDiscount" for="minDiscount">Min indirim (%)</label>
-            <select id="minDiscount">
-              <option value="0">0</option>
-              <option value="10">10</option>
-              <option value="25">25</option>
-              <option value="50">50</option>
-              <option value="75">75</option>
-            </select>
-          </div>
-          <div class="field">
-            <label id="labelReviewFilter" for="reviewFilter">İnceleme filtresi</label>
-            <select id="reviewFilter">
-              <option id="reviewAny" value="any">Tüm skorlar</option>
-              <option id="reviewPositivePlus" value="positive_plus">Pozitif ve üzeri</option>
-              <option id="reviewVeryPositivePlus" value="very_positive_plus">Çok pozitif ve üzeri</option>
-            </select>
-          </div>
+        <div class="field">
+          <label id="labelReviewFilter" for="reviewFilter">İnceleme filtresi</label>
+          <select id="reviewFilter">
+            <option id="reviewAny" value="any">Tüm skorlar</option>
+            <option id="reviewPositivePlus" value="positive_plus">Pozitif ve üzeri</option>
+            <option id="reviewVeryPositivePlus" value="very_positive_plus">Çok pozitif ve üzeri</option>
+          </select>
         </div>
         <div class="two-col-grid">
           <div class="field">
