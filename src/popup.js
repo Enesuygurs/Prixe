@@ -560,26 +560,31 @@ function renderProfiles() {
     actionsDiv.className = "profile-actions";
 
     const loadBtn = document.createElement("button");
-    loadBtn.className = "chip-btn profile-load";
-    loadBtn.textContent = t("profileLoadBtn");
-    loadBtn.addEventListener("click", async () => {
-      await loadProfile(profileName);
-    });
+      loadBtn.className = "chip-btn profile-load";
+        loadBtn.style.background = "#16a34a";
+        loadBtn.style.color = "#fff";
+        loadBtn.style.border = "none";
+      loadBtn.textContent = t("profileLoadBtn");
+      loadBtn.addEventListener("click", async () => {
+        await loadProfile(profileName);
+      });
 
-    const updateBtn = document.createElement("button");
-    updateBtn.className = "chip-btn profile-save";
-    updateBtn.textContent = t("profileSaveBtn");
-    updateBtn.addEventListener("click", async () => {
-      await saveCurrentAsProfile(profileName);
-    });
+      const updateBtn = document.createElement("button");
+      updateBtn.className = "chip-btn profile-save";
+        updateBtn.style.background = "#ca8a04";
+        updateBtn.style.color = "#fff";
+        updateBtn.style.border = "none";
+      updateBtn.textContent = t("profileSaveBtn");
+      updateBtn.addEventListener("click", async () => {
+        await saveCurrentAsProfile(profileName);
+      });
 
-    const deleteBtn = document.createElement("button");
-    deleteBtn.className = "chip-btn profile-delete";
-    deleteBtn.textContent = t("profileDeleteBtn");
-    deleteBtn.style.color = "#ffb3b3";
-    deleteBtn.addEventListener("click", async () => {
-      await deleteProfile(profileName);
-    });
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className = "chip-btn profile-delete";
+      deleteBtn.textContent = t("profileDeleteBtn");
+      deleteBtn.addEventListener("click", async () => {
+        await deleteProfile(profileName);
+      });
 
     actionsDiv.appendChild(loadBtn);
     actionsDiv.appendChild(updateBtn);

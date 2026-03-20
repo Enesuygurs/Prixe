@@ -269,8 +269,8 @@ select:focus {
 
 .profile-delete {
   border: 0 !important;
-  color: #f5fbff !important;
-  background: #5a2a35 !important;
+  color: #fff !important;
+  background: #dc2626 !important;
   transition: background 0.2s ease, filter 0.2s ease !important;
 }
 .profile-delete:hover {
