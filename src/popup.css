@@ -179,6 +179,27 @@ select:focus {
   gap: 8px;
 }
 
+.add-profile-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.add-profile-row input {
+  flex: 1;
+  height: 32px;
+  border: 1px solid rgba(113, 145, 172, 0.35);
+  border-radius: 8px;
+  padding: 0 10px;
+  background: rgba(8, 17, 28, 0.88);
+  color: #e6f0f9;
+  font-size: 12px;
+  outline: none;
+}
+.add-profile-row input:focus {
+  border-color: rgba(102, 192, 244, 0.9);
+  box-shadow: 0 0 0 2px rgba(102, 192, 244, 0.2);
+}
+
 .profile-row {
   display: flex;
   align-items: center;
@@ -240,6 +261,13 @@ select:focus {
 .chip-btn:hover {
   border-color: rgba(102, 192, 244, 0.9);
   color: #e9f5ff;
+}
+
+.profile-delete {
+  color: #ffb3b3 !important;
+}
+.profile-delete:hover {
+  border-color: rgba(239, 68, 68, 0.8) !important;
 }
 
 .check-item {

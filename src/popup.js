@@ -26,42 +26,7 @@ const STORAGE_KEYS = {
   profiles: "prixeProfiles"
 };
 
-const PROFILE_SLOTS = ["casual", "discountHunter", "newReleases"];
-
-function getBuiltInProfiles() {
-  const currentYear = new Date().getFullYear();
-  return {
-    casual: {
-      ...DEFAULT_STATE,
-      maxPrice: 20,
-      minDiscount: 10,
-      minUserScore: 70,
-      reviewFilter: "any",
-      minReleaseYear: 0
-    },
-    discountHunter: {
-      ...DEFAULT_STATE,
-      maxPrice: 15,
-      minDiscount: 50,
-      minReviews: 100,
-      reviewFilter: "positive_plus",
-      minUserScore: 80,
-      specials: true,
-      hidef2p: true
-    },
-    newReleases: {
-      ...DEFAULT_STATE,
-      maxPrice: 30,
-      minDiscount: 0,
-      minReleaseYear: currentYear - 1,
-      reviewFilter: "any",
-      minReviews: 0,
-      minUserScore: 0
-    }
-  };
-}
-
-let cachedProfiles = getBuiltInProfiles();
+let cachedProfiles = {};
 
 const STRINGS = {
   tr: {
@@ -102,11 +67,12 @@ const STRINGS = {
     labelOnlyCloudSaves: "Steam Cloud",
     labelHideComingSoon: "Coming Soon gizle",
     labelProfilesSection: "FAVORİ PROFİLLER",
-    profileCasualName: "Casual",
-    profileDiscountHunterName: "İndirim Avcısı",
-    profileNewReleasesName: "Yeni Oyunlar",
     profileLoadBtn: "Yükle",
-    profileSaveBtn: "Kaydet",
+    profileSaveBtn: "Güncelle",
+    profileDeleteBtn: "Sil",
+    profileAddBtn: "Ekle",
+    profileNamePlaceholder: "Profil adı...",
+    noProfilesFound: "Kayıtlı profil bulunmuyor.",
     categoryGames: "Oyunlar",
     categorySoftware: "Yazılım",
     categoryDlc: "İndirilebilir İçerik",
@@ -167,11 +133,12 @@ const STRINGS = {
     labelOnlyCloudSaves: "Steam Cloud",
     labelHideComingSoon: "Hide Coming Soon",
     labelProfilesSection: "FAVORITE PROFILES",
-    profileCasualName: "Casual",
-    profileDiscountHunterName: "Discount Hunter",
-    profileNewReleasesName: "New Releases",
     profileLoadBtn: "Load",
-    profileSaveBtn: "Save",
+    profileSaveBtn: "Update",
+    profileDeleteBtn: "Delete",
+    profileAddBtn: "Add",
+    profileNamePlaceholder: "Profile name...",
+    noProfilesFound: "No saved profiles.",
     categoryGames: "Games",
     categorySoftware: "Software",
     categoryDlc: "Downloadable Content",
@@ -232,16 +199,6 @@ function setStatus(text, isError = false) {
   if (!statusEl) return;
   statusEl.textContent = text;
   statusEl.style.color = isError ? "#ffb3b3" : "#8ce0aa";
-}
-
-function profileLabel(profileKey) {
-  if (profileKey === "discountHunter") {
-    return t("profileDiscountHunterName");
-  }
-  if (profileKey === "newReleases") {
-    return t("profileNewReleasesName");
-  }
-  return t("profileCasualName");
 }
 
 function getSettingsSourceInputs() {
@@ -551,18 +508,87 @@ async function resetState() {
   setStatus(t("statusReset"));
 }
 
-async function loadProfile(profileKey) {
-  const profileState = sanitizeState(cachedProfiles[profileKey] || getBuiltInProfiles()[profileKey] || DEFAULT_STATE);
+async function loadProfile(profileName) {
+  const profileState = sanitizeState(cachedProfiles[profileName] || DEFAULT_STATE);
   writeUIState(profileState);
   await persistSettingsFromUI();
-  setStatus(t("statusProfileLoaded").replace("{name}", profileLabel(profileKey)));
+  setStatus(t("statusProfileLoaded").replace("{name}", profileName));
 }
 
-async function saveCurrentAsProfile(profileKey) {
+async function saveCurrentAsProfile(profileName) {
   const state = sanitizeState(readUIState());
-  cachedProfiles[profileKey] = state;
+  cachedProfiles[profileName] = state;
   await saveProfiles(cachedProfiles);
-  setStatus(t("statusProfileSaved").replace("{name}", profileLabel(profileKey)));
+  renderProfiles();
+  setStatus(t("statusProfileSaved").replace("{name}", profileName));
+}
+
+async function deleteProfile(profileName) {
+  delete cachedProfiles[profileName];
+  await saveProfiles(cachedProfiles);
+  renderProfiles();
+  setStatus(t("statusProfileDeleted").replace("{name}", profileName));
+}
+
+function renderProfiles() {
+  const profileList = document.getElementById("profileList");
+  if (!profileList) return;
+  profileList.innerHTML = "";
+
+  const profileKeys = Object.keys(cachedProfiles);
+
+  if (profileKeys.length === 0) {
+    const emptyMsg = document.createElement("div");
+    emptyMsg.style.color = "#93a9bc";
+    emptyMsg.style.fontSize = "12px";
+    emptyMsg.style.textAlign = "center";
+    emptyMsg.style.padding = "10px 0";
+    emptyMsg.textContent = t("noProfilesFound");
+    profileList.appendChild(emptyMsg);
+    return;
+  }
+
+  profileKeys.forEach((profileName) => {
+    const row = document.createElement("div");
+    row.className = "profile-row";
+
+    const nameSpan = document.createElement("span");
+    nameSpan.className = "profile-name";
+    nameSpan.textContent = profileName;
+
+    const actionsDiv = document.createElement("div");
+    actionsDiv.className = "profile-actions";
+
+    const loadBtn = document.createElement("button");
+    loadBtn.className = "chip-btn profile-load";
+    loadBtn.textContent = t("profileLoadBtn");
+    loadBtn.addEventListener("click", async () => {
+      await loadProfile(profileName);
+    });
+
+    const updateBtn = document.createElement("button");
+    updateBtn.className = "chip-btn profile-save";
+    updateBtn.textContent = t("profileSaveBtn");
+    updateBtn.addEventListener("click", async () => {
+      await saveCurrentAsProfile(profileName);
+    });
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "chip-btn profile-delete";
+    deleteBtn.textContent = t("profileDeleteBtn");
+    deleteBtn.style.color = "#ffb3b3";
+    deleteBtn.addEventListener("click", async () => {
+      await deleteProfile(profileName);
+    });
+
+    actionsDiv.appendChild(loadBtn);
+    actionsDiv.appendChild(updateBtn);
+    actionsDiv.appendChild(deleteBtn);
+
+    row.appendChild(nameSpan);
+    row.appendChild(actionsDiv);
+    profileList.appendChild(row);
+  });
 }
 
 function applyLanguage(lang) {
@@ -606,17 +632,19 @@ function applyLanguage(lang) {
   setText("categoryVideos", t("categoryVideos"));
   setText("categoryMods", t("categoryMods"));
   setText("categoryHardware", t("categoryHardware"));
-  setText("profileCasualName", t("profileCasualName"));
-  setText("profileDiscountHunterName", t("profileDiscountHunterName"));
-  setText("profileNewReleasesName", t("profileNewReleasesName"));
 
-  document.querySelectorAll(".profile-load").forEach((button) => {
-    button.textContent = t("profileLoadBtn");
-  });
+  const newProfileNameInput = document.getElementById("newProfileName");
+  if (newProfileNameInput) {
+    newProfileNameInput.placeholder = t("profileNamePlaceholder");
+  }
+  
+  const btnSaveNewProfile = document.getElementById("btnSaveNewProfile");
+  if (btnSaveNewProfile) {
+    btnSaveNewProfile.textContent = t("profileAddBtn");
+  }
 
-  document.querySelectorAll(".profile-save").forEach((button) => {
-    button.textContent = t("profileSaveBtn");
-  });
+  // Reload profiles with new language
+  renderProfiles();
 
   setCheckboxLabel("labelEnablePriceHighlight", t("labelEnablePriceHighlight"));
   setCheckboxLabel("labelHideMixedOrWorse", t("labelHideMixedOrWorse"));
@@ -645,14 +673,22 @@ function applyLanguage(lang) {
 async function bootstrap() {
   const data = await chrome.storage.local.get([STORAGE_KEYS.state, STORAGE_KEYS.language, STORAGE_KEYS.profiles]);
   currentLang = data[STORAGE_KEYS.language] === "en" ? "en" : "tr";
-  cachedProfiles = {
-    ...getBuiltInProfiles(),
-    ...(data[STORAGE_KEYS.profiles] || {})
-  };
+  cachedProfiles = data[STORAGE_KEYS.profiles] || {};
 
   const state = sanitizeState(data[STORAGE_KEYS.state]);
   writeUIState(state);
   applyLanguage(currentLang);
+
+  const btnSaveNewProfile = document.getElementById("btnSaveNewProfile");
+  const newProfileNameInput = document.getElementById("newProfileName");
+  if (btnSaveNewProfile && newProfileNameInput) {
+    btnSaveNewProfile.addEventListener("click", async () => {
+      const name = newProfileNameInput.value.trim();
+      if (!name) return;
+      await saveCurrentAsProfile(name);
+      newProfileNameInput.value = "";
+    });
+  }
 
   document.getElementById("languageSelect").addEventListener("change", async (event) => {
     const lang = event.target.value === "en" ? "en" : "tr";
@@ -665,18 +701,6 @@ async function bootstrap() {
       const maxPrice = Number(button.dataset.maxprice || "0");
       document.getElementById("maxPrice").value = String(maxPrice);
       await persistSettingsFromUI();
-    });
-  });
-
-  document.querySelectorAll(".profile-load").forEach((button) => {
-    button.addEventListener("click", async () => {
-      await loadProfile(button.dataset.profile);
-    });
-  });
-
-  document.querySelectorAll(".profile-save").forEach((button) => {
-    button.addEventListener("click", async () => {
-      await saveCurrentAsProfile(button.dataset.profile);
     });
   });
 
