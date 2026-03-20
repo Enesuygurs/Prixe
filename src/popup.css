@@ -267,28 +267,28 @@ select:focus {
 .btn-primary {
   border: 0;
   color: #f5fbff;
-  background: linear-gradient(90deg, #1b6fa8 0%, #2a8fce 100%);
+  background: #1b6fa8;
+  transition: background 0.2s ease, filter 0.2s ease;
 }
 
 .btn-secondary {
-  border: 1px solid rgba(101, 146, 178, 0.55);
-  color: #d7e9f7;
-  background: rgba(14, 30, 45, 0.88);
+  border: 0;
+  color: #f5fbff;
+  background: #2a3f5a;
+  transition: background 0.2s ease, filter 0.2s ease;
 }
 
 .btn-ghost {
-  border: 1px solid rgba(140, 109, 109, 0.45);
-  color: #f3d7d7;
-  background: rgba(37, 19, 22, 0.75);
+  border: 0;
+  color: #f5fbff;
+  background: #5a2a35;
+  transition: background 0.2s ease, filter 0.2s ease;
 }
 
-.btn-primary:hover {
-  filter: brightness(1.06);
-}
-
+.btn-primary:hover,
 .btn-secondary:hover,
 .btn-ghost:hover {
-  border-color: rgba(102, 192, 244, 0.8);
+  filter: brightness(1.15);
 }
 
 .steam-switch {
@@ -372,6 +372,8 @@ select:focus {
 .hidden {
   display: none !important;
 }
+
+
 
 
 
