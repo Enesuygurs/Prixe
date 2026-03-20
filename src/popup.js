@@ -22,8 +22,46 @@ const DEFAULT_STATE = {
 
 const STORAGE_KEYS = {
   state: "steamSearchState",
-  language: "steamUiLanguage"
+  language: "steamUiLanguage",
+  profiles: "prixeProfiles"
 };
+
+const PROFILE_SLOTS = ["casual", "discountHunter", "newReleases"];
+
+function getBuiltInProfiles() {
+  const currentYear = new Date().getFullYear();
+  return {
+    casual: {
+      ...DEFAULT_STATE,
+      maxPrice: 20,
+      minDiscount: 10,
+      minUserScore: 70,
+      reviewFilter: "any",
+      minReleaseYear: 0
+    },
+    discountHunter: {
+      ...DEFAULT_STATE,
+      maxPrice: 15,
+      minDiscount: 50,
+      minReviews: 100,
+      reviewFilter: "positive_plus",
+      minUserScore: 80,
+      specials: true,
+      hidef2p: true
+    },
+    newReleases: {
+      ...DEFAULT_STATE,
+      maxPrice: 30,
+      minDiscount: 0,
+      minReleaseYear: currentYear - 1,
+      reviewFilter: "any",
+      minReviews: 0,
+      minUserScore: 0
+    }
+  };
+}
+
+let cachedProfiles = getBuiltInProfiles();
 
 const STRINGS = {
   tr: {
@@ -58,6 +96,12 @@ const STRINGS = {
     labelOnlyTradingCards: "Steam koleksiyon kartları",
     labelOnlyCloudSaves: "Steam Cloud",
     labelHideComingSoon: "Coming Soon gizle",
+    labelProfilesSection: "FAVORİ PROFİLLER",
+    profileCasualName: "Casual",
+    profileDiscountHunterName: "İndirim Avcısı",
+    profileNewReleasesName: "Yeni Oyunlar",
+    profileLoadBtn: "Yükle",
+    profileSaveBtn: "Kaydet",
     categoryGames: "Oyunlar",
     categorySoftware: "Yazılım",
     categoryDlc: "İndirilebilir İçerik",
@@ -74,6 +118,8 @@ const STRINGS = {
     errMidLessThanLow: "Orta fiyat, düşük fiyattan küçük olamaz.",
     statusApplied: "Steam arama filtreleri uygulandı.",
     statusSaved: "Ayarlar otomatik kaydedildi.",
+    statusProfileLoaded: "Profil yüklendi: {name}",
+    statusProfileSaved: "Profil kaydedildi: {name}",
     statusSearchOpened: "Steam Arama açıldı.",
     statusReset: "Varsayılan ayarlara dönüldü.",
     statusDisabled: "Prixe kapalı. Steam sayfasında işlem yapılmadı."
@@ -110,6 +156,12 @@ const STRINGS = {
     labelOnlyTradingCards: "Steam Trading Cards",
     labelOnlyCloudSaves: "Steam Cloud",
     labelHideComingSoon: "Hide Coming Soon",
+    labelProfilesSection: "FAVORITE PROFILES",
+    profileCasualName: "Casual",
+    profileDiscountHunterName: "Discount Hunter",
+    profileNewReleasesName: "New Releases",
+    profileLoadBtn: "Load",
+    profileSaveBtn: "Save",
     categoryGames: "Games",
     categorySoftware: "Software",
     categoryDlc: "Downloadable Content",
@@ -126,6 +178,8 @@ const STRINGS = {
     errMidLessThanLow: "Mid price cannot be less than low price.",
     statusApplied: "Steam search filters applied.",
     statusSaved: "Settings auto-saved.",
+    statusProfileLoaded: "Profile loaded: {name}",
+    statusProfileSaved: "Profile saved: {name}",
     statusSearchOpened: "Steam Search opened.",
     statusReset: "Defaults restored.",
     statusDisabled: "Prixe is disabled. No action was applied on Steam page."
@@ -167,6 +221,16 @@ function setCheckboxLabel(labelId, text) {
 function setStatus(text, isError = false) {
   statusEl.textContent = text;
   statusEl.style.color = isError ? "#ffb3b3" : "#8ce0aa";
+}
+
+function profileLabel(profileKey) {
+  if (profileKey === "discountHunter") {
+    return t("profileDiscountHunterName");
+  }
+  if (profileKey === "newReleases") {
+    return t("profileNewReleasesName");
+  }
+  return t("profileCasualName");
 }
 
 function getSettingsSourceInputs() {
@@ -362,6 +426,10 @@ async function saveState(state) {
   await chrome.storage.local.set({ [STORAGE_KEYS.state]: state });
 }
 
+async function saveProfiles(profiles) {
+  await chrome.storage.local.set({ [STORAGE_KEYS.profiles]: profiles });
+}
+
 async function notifyContentScript(tabId, state) {
   try {
     const response = await chrome.tabs.sendMessage(tabId, {
@@ -472,12 +540,27 @@ async function resetState() {
   setStatus(t("statusReset"));
 }
 
+async function loadProfile(profileKey) {
+  const profileState = sanitizeState(cachedProfiles[profileKey] || getBuiltInProfiles()[profileKey] || DEFAULT_STATE);
+  writeUIState(profileState);
+  await persistSettingsFromUI();
+  setStatus(t("statusProfileLoaded").replace("{name}", profileLabel(profileKey)));
+}
+
+async function saveCurrentAsProfile(profileKey) {
+  const state = sanitizeState(readUIState());
+  cachedProfiles[profileKey] = state;
+  await saveProfiles(cachedProfiles);
+  setStatus(t("statusProfileSaved").replace("{name}", profileLabel(profileKey)));
+}
+
 function applyLanguage(lang) {
   currentLang = lang === "en" ? "en" : "tr";
   document.documentElement.lang = currentLang;
 
   setText("labelAppSubtitle", t("appSubtitle"));
   setText("labelFilterSettings", t("labelFilterSettings"));
+  setText("labelProfilesSection", t("labelProfilesSection"));
   setText("labelHomeFiltersSection", t("labelHomeFiltersSection"));
   setText("labelCheckboxFiltersSection", t("labelCheckboxFiltersSection"));
   setText("labelLowPrice", t("labelLowPrice"));
@@ -507,6 +590,17 @@ function applyLanguage(lang) {
   setText("categoryVideos", t("categoryVideos"));
   setText("categoryMods", t("categoryMods"));
   setText("categoryHardware", t("categoryHardware"));
+  setText("profileCasualName", t("profileCasualName"));
+  setText("profileDiscountHunterName", t("profileDiscountHunterName"));
+  setText("profileNewReleasesName", t("profileNewReleasesName"));
+
+  document.querySelectorAll(".profile-load").forEach((button) => {
+    button.textContent = t("profileLoadBtn");
+  });
+
+  document.querySelectorAll(".profile-save").forEach((button) => {
+    button.textContent = t("profileSaveBtn");
+  });
 
   setCheckboxLabel("labelEnablePriceHighlight", t("labelEnablePriceHighlight"));
   setCheckboxLabel("labelHideMixedOrWorse", t("labelHideMixedOrWorse"));
@@ -533,8 +627,12 @@ function applyLanguage(lang) {
 }
 
 async function bootstrap() {
-  const data = await chrome.storage.local.get([STORAGE_KEYS.state, STORAGE_KEYS.language]);
+  const data = await chrome.storage.local.get([STORAGE_KEYS.state, STORAGE_KEYS.language, STORAGE_KEYS.profiles]);
   currentLang = data[STORAGE_KEYS.language] === "en" ? "en" : "tr";
+  cachedProfiles = {
+    ...getBuiltInProfiles(),
+    ...(data[STORAGE_KEYS.profiles] || {})
+  };
 
   const state = sanitizeState(data[STORAGE_KEYS.state]);
   writeUIState(state);
@@ -551,6 +649,18 @@ async function bootstrap() {
       const maxPrice = Number(button.dataset.maxprice || "0");
       document.getElementById("maxPrice").value = String(maxPrice);
       await persistSettingsFromUI();
+    });
+  });
+
+  document.querySelectorAll(".profile-load").forEach((button) => {
+    button.addEventListener("click", async () => {
+      await loadProfile(button.dataset.profile);
+    });
+  });
+
+  document.querySelectorAll(".profile-save").forEach((button) => {
+    button.addEventListener("click", async () => {
+      await saveCurrentAsProfile(button.dataset.profile);
     });
   });
 

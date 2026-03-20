@@ -46,6 +46,7 @@
     tr: {
       lowestPriceLabel: "En düşük fiyat",
       durationLabel: "Oyun süresi",
+      qualityScoreLabel: "Skor",
       loading: "Yükleniyor...",
       notFound: "Bulunamadı",
       unavailable: "Alınamadı",
@@ -54,6 +55,7 @@
     en: {
       lowestPriceLabel: "Lowest price",
       durationLabel: "Playtime",
+      qualityScoreLabel: "Score",
       loading: "Loading...",
       notFound: "Not found",
       unavailable: "Unavailable",
@@ -310,6 +312,32 @@
         background: rgba(239, 109, 109, 0.2);
         color: #ffc1c1;
       }
+
+      .ssh-quality-tag {
+        display: inline-flex;
+        margin-right: 6px;
+        padding: 2px 6px;
+        border-radius: 99px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+      }
+
+      .ssh-quality-tag.high {
+        background: rgba(64, 196, 99, 0.2);
+        color: #9ff0b4;
+      }
+
+      .ssh-quality-tag.mid {
+        background: rgba(246, 183, 60, 0.2);
+        color: #ffe0a3;
+      }
+
+      .ssh-quality-tag.low {
+        background: rgba(239, 109, 109, 0.2);
+        color: #ffc1c1;
+      }
     `;
 
     document.head.appendChild(style);
@@ -491,6 +519,11 @@
       oldTag.remove();
     }
 
+    const oldScoreTag = row.querySelector(".ssh-quality-tag");
+    if (oldScoreTag) {
+      oldScoreTag.remove();
+    }
+
     row.classList.remove("ssh-price-low", "ssh-price-mid", "ssh-price-high");
   }
 
@@ -530,6 +563,49 @@
     }
 
     appendPriceTag(row, price, tier);
+  }
+
+  function calculateQualityScore(state, metrics) {
+    const discountNorm = Math.min(Math.max(metrics.discount, 0), 90) / 90;
+    const positiveNorm = Math.min(Math.max(metrics.positivePercent, 0), 100) / 100;
+
+    const reviewNorm = Math.min(1, Math.log10((metrics.reviewCount || 0) + 1) / 4);
+
+    const priceBaseline = state.maxPrice > 0 ? state.maxPrice : 30;
+    const effectivePrice = Number.isFinite(metrics.price) ? metrics.price : priceBaseline;
+    const priceNorm = effectivePrice <= 0
+      ? 1
+      : Math.max(0, 1 - Math.min(effectivePrice, priceBaseline * 2) / (priceBaseline * 2));
+
+    const score = (
+      discountNorm * 0.35 +
+      positiveNorm * 0.3 +
+      reviewNorm * 0.2 +
+      priceNorm * 0.15
+    ) * 100;
+
+    return Math.round(Math.max(0, Math.min(100, score)));
+  }
+
+  function applyQualityScoreTag(row, state, metrics) {
+    const titleContainer = row.querySelector(".search_name");
+    if (!titleContainer) {
+      return;
+    }
+
+    const score = calculateQualityScore(state, metrics);
+    const scoreTag = document.createElement("span");
+    scoreTag.className = "ssh-quality-tag";
+    if (score >= 70) {
+      scoreTag.classList.add("high");
+    } else if (score >= 45) {
+      scoreTag.classList.add("mid");
+    } else {
+      scoreTag.classList.add("low");
+    }
+
+    scoreTag.textContent = `${getAppText("qualityScoreLabel")} ${score}`;
+    titleContainer.prepend(scoreTag);
   }
 
   function isDlcRow(row, rowText, href) {
@@ -588,6 +664,12 @@
     row.classList.toggle("ssh-hidden", !visible);
 
     applyPriceMarking(row, state, price);
+    applyQualityScoreTag(row, state, {
+      price,
+      discount,
+      positivePercent,
+      reviewCount
+    });
 
     return {
       row,
