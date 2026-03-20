@@ -90,13 +90,20 @@ body {
 }
 
 .main-area::-webkit-scrollbar {
-  width: 8px;
+  display: none;
 }
 
+.main-area {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* 
 .main-area::-webkit-scrollbar-thumb {
   background: rgba(101, 129, 156, 0.35);
   border-radius: 6px;
 }
+*/
 
 .panel-card {
   margin-bottom: 10px;
