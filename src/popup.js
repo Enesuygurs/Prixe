@@ -229,6 +229,7 @@ function setCheckboxLabel(labelId, text) {
 }
 
 function setStatus(text, isError = false) {
+  if (!statusEl) return;
   statusEl.textContent = text;
   statusEl.style.color = isError ? "#ffb3b3" : "#8ce0aa";
 }
@@ -728,6 +729,7 @@ async function bootstrap() {
   });}
 
 bootstrap();
+
 
 
 

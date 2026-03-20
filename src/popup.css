@@ -291,17 +291,6 @@ select:focus {
   border-color: rgba(102, 192, 244, 0.8);
 }
 
-.status-wrap {
-  padding: 0 16px;
-}
-.status-line {
-  min-height: 18px;
-  margin-top: 8px;
-  padding: 0 2px 4px;
-  font-size: 12px;
-  color: #8ce0aa;
-}
-
 .steam-switch {
   position: relative;
   display: inline-flex;
@@ -383,6 +372,7 @@ select:focus {
 .hidden {
   display: none !important;
 }
+
 
 
 
