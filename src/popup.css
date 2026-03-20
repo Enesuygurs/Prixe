@@ -199,6 +199,10 @@ select:focus {
   border-color: rgba(102, 192, 244, 0.9);
   box-shadow: 0 0 0 2px rgba(102, 192, 244, 0.2);
 }
+.add-profile-row .chip-btn {
+  height: 32px;
+  padding: 0 16px;
+}
 
 .profile-row {
   display: flex;
@@ -264,10 +268,13 @@ select:focus {
 }
 
 .profile-delete {
-  color: #ffb3b3 !important;
+  border: 0 !important;
+  color: #f5fbff !important;
+  background: #5a2a35 !important;
+  transition: background 0.2s ease, filter 0.2s ease !important;
 }
 .profile-delete:hover {
-  border-color: rgba(239, 68, 68, 0.8) !important;
+  filter: brightness(1.15);
 }
 
 .check-item {
