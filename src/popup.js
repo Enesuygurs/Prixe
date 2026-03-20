@@ -70,6 +70,7 @@ const STRINGS = {
     labelSettingsSection: "GENEL AYARLAR",
     labelLanguage: "Dil",
     homeBtnTitle: "Ana Sayfa",
+    profilesBtnTitle: "Profiller",
     settingsBtnTitle: "Ayarlar",
     labelFilterSettings: "FİLTRE AYARLARI",
     labelHomeFiltersSection: "ARAMA FİLTRELERİ",
@@ -134,6 +135,7 @@ const STRINGS = {
     labelSettingsSection: "GENERAL SETTINGS",
     labelLanguage: "Language",
     homeBtnTitle: "Home",
+    profilesBtnTitle: "Profiles",
     settingsBtnTitle: "Settings",
     labelFilterSettings: "FILTER SETTINGS",
     labelHomeFiltersSection: "SEARCH FILTERS",
@@ -570,6 +572,7 @@ function applyLanguage(lang) {
   setText("labelSettingsSection", t("labelSettingsSection"));
   setText("labelLanguage", t("labelLanguage"));
   document.getElementById("homeBtn").title = t("homeBtnTitle");
+  document.getElementById("profilesBtn").title = t("profilesBtnTitle");
   document.getElementById("settingsBtn").title = t("settingsBtnTitle");
   setText("labelFilterSettings", t("labelFilterSettings"));
   setText("labelProfilesSection", t("labelProfilesSection"));
@@ -687,11 +690,15 @@ async function bootstrap() {
   document.getElementById("openSearchBtn").addEventListener("click", openSteamSearch);
   document.getElementById("resetBtn").addEventListener("click", resetState);
 
-  // TAB LOGIC
+    // TAB LOGIC
   const homeBtn = document.getElementById("homeBtn");
+  const profilesBtn = document.getElementById("profilesBtn");
   const settingsBtn = document.getElementById("settingsBtn");
+  
   const homePanel = document.getElementById("homePanel");
+  const profilesPanel = document.getElementById("profilesPanel");
   const settingsPanel = document.getElementById("settingsPanel");
+  
   const tabBtns = document.querySelectorAll(".tab-btn");
 
   function setActiveTab(activeBtn) {
@@ -702,6 +709,14 @@ async function bootstrap() {
   homeBtn.addEventListener("click", () => {
     setActiveTab(homeBtn);
     homePanel.classList.remove("hidden");
+    profilesPanel.classList.add("hidden");
+    settingsPanel.classList.add("hidden");
+  });
+
+  profilesBtn.addEventListener("click", () => {
+    setActiveTab(profilesBtn);
+    profilesPanel.classList.remove("hidden");
+    homePanel.classList.add("hidden");
     settingsPanel.classList.add("hidden");
   });
 
@@ -709,12 +724,13 @@ async function bootstrap() {
     setActiveTab(settingsBtn);
     settingsPanel.classList.remove("hidden");
     homePanel.classList.add("hidden");
-  });
-}
+    profilesPanel.classList.add("hidden");
+  });}
 
 bootstrap();
 
-bootstrap();
+
+
 
 
 

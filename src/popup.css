@@ -22,7 +22,7 @@ body {
 
 .container {
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto 1fr auto;
   height: 100%;
 }
 
@@ -30,13 +30,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 14px 16px 12px;
+  gap: 8px;
+  padding: 12px 14px;
   border-bottom: 1px solid rgba(133, 161, 188, 0.2);
   background: linear-gradient(180deg, rgba(17, 25, 36, 0.96), rgba(17, 25, 36, 0.72));
 }
 
 .brand-wrap {
+  flex: 1;
   min-width: 0;
 }
 
@@ -68,7 +69,8 @@ body {
 .header-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
 .lang-select {
@@ -289,6 +291,9 @@ select:focus {
   border-color: rgba(102, 192, 244, 0.8);
 }
 
+.status-wrap {
+  padding: 0 16px;
+}
 .status-line {
   min-height: 18px;
   margin-top: 8px;
@@ -354,10 +359,12 @@ select:focus {
   border: none;
   color: #71717a;
   cursor: pointer;
-  padding: 6px;
+  padding: 4px;
   border-radius: 6px;
   transition: all 0.2s;
   display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .icon-btn:hover {
   color: #e4e4e7;
@@ -376,3 +383,9 @@ select:focus {
 .hidden {
   display: none !important;
 }
+
+
+
+
+
+
