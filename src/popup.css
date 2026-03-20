@@ -340,3 +340,32 @@ select:focus {
     grid-template-columns: 1fr;
   }
 }
+
+/* ===== Tab Buttons ===== */
+.icon-btn {
+  background: none;
+  border: none;
+  color: #71717a;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  display: flex;
+}
+.icon-btn:hover {
+  color: #e4e4e7;
+  background: rgba(102, 192, 244, 0.15);
+}
+.header-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(133, 161, 188, 0.2);
+  margin: 0 4px;
+}
+.icon-btn.tab-btn.active {
+  color: #66c0f4;
+  background: rgba(102, 192, 244, 0.15);
+}
+.hidden {
+  display: none !important;
+}

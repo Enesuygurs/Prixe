@@ -67,6 +67,10 @@ const STRINGS = {
   tr: {
     labelMasterEnabled: "Prixe aktif",
     appSubtitle: "Steam Arama filtrelerini tek noktadan yönet",
+    labelSettingsSection: "GENEL AYARLAR",
+    labelLanguage: "Dil",
+    homeBtnTitle: "Ana Sayfa",
+    settingsBtnTitle: "Ayarlar",
     labelFilterSettings: "FİLTRE AYARLARI",
     labelHomeFiltersSection: "ARAMA FİLTRELERİ",
     labelCheckboxFiltersSection: "ONAY KUTUSU FİLTRELERİ",
@@ -127,6 +131,10 @@ const STRINGS = {
   en: {
     labelMasterEnabled: "Prixe enabled",
     appSubtitle: "Manage Steam Search filters from one place",
+    labelSettingsSection: "GENERAL SETTINGS",
+    labelLanguage: "Language",
+    homeBtnTitle: "Home",
+    settingsBtnTitle: "Settings",
     labelFilterSettings: "FILTER SETTINGS",
     labelHomeFiltersSection: "SEARCH FILTERS",
     labelCheckboxFiltersSection: "CHECKBOX FILTERS",
@@ -559,6 +567,10 @@ function applyLanguage(lang) {
   document.documentElement.lang = currentLang;
 
   setText("labelAppSubtitle", t("appSubtitle"));
+  setText("labelSettingsSection", t("labelSettingsSection"));
+  setText("labelLanguage", t("labelLanguage"));
+  document.getElementById("homeBtn").title = t("homeBtnTitle");
+  document.getElementById("settingsBtn").title = t("settingsBtnTitle");
   setText("labelFilterSettings", t("labelFilterSettings"));
   setText("labelProfilesSection", t("labelProfilesSection"));
   setText("labelHomeFiltersSection", t("labelHomeFiltersSection"));
@@ -674,6 +686,36 @@ async function bootstrap() {
   document.getElementById("applyBtn").addEventListener("click", applyFiltersToSteam);
   document.getElementById("openSearchBtn").addEventListener("click", openSteamSearch);
   document.getElementById("resetBtn").addEventListener("click", resetState);
+
+  // TAB LOGIC
+  const homeBtn = document.getElementById("homeBtn");
+  const settingsBtn = document.getElementById("settingsBtn");
+  const homePanel = document.getElementById("homePanel");
+  const settingsPanel = document.getElementById("settingsPanel");
+  const tabBtns = document.querySelectorAll(".tab-btn");
+
+  function setActiveTab(activeBtn) {
+    tabBtns.forEach(btn => btn.classList.remove("active"));
+    activeBtn.classList.add("active");
+  }
+
+  homeBtn.addEventListener("click", () => {
+    setActiveTab(homeBtn);
+    homePanel.classList.remove("hidden");
+    settingsPanel.classList.add("hidden");
+  });
+
+  settingsBtn.addEventListener("click", () => {
+    setActiveTab(settingsBtn);
+    settingsPanel.classList.remove("hidden");
+    homePanel.classList.add("hidden");
+  });
 }
 
 bootstrap();
+
+bootstrap();
+
+
+
+
