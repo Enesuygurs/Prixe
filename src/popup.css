@@ -317,22 +317,22 @@ select:focus {
 
 .btn-primary {
   border: 0;
-  color: #f5fbff;
-  background: #1b6fa8;
+  color: #fff;
+  background: #16a34a;
   transition: background 0.2s ease, filter 0.2s ease;
 }
 
 .btn-secondary {
   border: 0;
-  color: #f5fbff;
-  background: #2a3f5a;
+  color: #fff;
+  background: #2563eb;
   transition: background 0.2s ease, filter 0.2s ease;
 }
 
 .btn-ghost {
   border: 0;
-  color: #f5fbff;
-  background: #5a2a35;
+  color: #fff;
+  background: #dc2626;
   transition: background 0.2s ease, filter 0.2s ease;
 }
 
